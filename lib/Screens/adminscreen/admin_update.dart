@@ -5,15 +5,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:recipely/adminscreen/admin_gridview.dart';
+import 'package:recipely/Screens/adminscreen/admin_gridview.dart';
 import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/models/model_recipe.dart';
 
-class Addingscreen extends StatefulWidget {
-  const Addingscreen({Key? key}) : super(key: key);
-
+class Updatescrren extends StatefulWidget {
+  const Updatescrren({Key? key, required this.reciepeOfIndexForEditng})
+      : super(key: key);
+  final Recipes reciepeOfIndexForEditng;
   @override
-  State<Addingscreen> createState() => _AddingscreenState();
+  State<Updatescrren> createState() => _AddingscreenState();
 }
 
 File? selectedImage;
@@ -29,14 +30,32 @@ List<String> categories = [
   "Arabian"
 ]; // List of categories
 
-class _AddingscreenState extends State<Addingscreen> {
+class _AddingscreenState extends State<Updatescrren> {
   final formKey = GlobalKey<FormState>();
-  TextEditingController titleController = TextEditingController();
-  TextEditingController timeController = TextEditingController();
-  TextEditingController categoryController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
-  TextEditingController ingredientsController = TextEditingController();
-  TextEditingController proceduresController = TextEditingController();
+  late TextEditingController titleController = TextEditingController();
+  late TextEditingController timeController = TextEditingController();
+  late TextEditingController categoryController = TextEditingController();
+  late TextEditingController descriptionController = TextEditingController();
+  late TextEditingController ingredientsController = TextEditingController();
+  late TextEditingController proceduresController = TextEditingController();
+
+  @override
+  void initState() {
+    selectedImage = File(widget.reciepeOfIndexForEditng.photo);
+    titleController =
+        TextEditingController(text: widget.reciepeOfIndexForEditng.title);
+    timeController =
+        TextEditingController(text: widget.reciepeOfIndexForEditng.time);
+    categoryController =
+        TextEditingController(text: widget.reciepeOfIndexForEditng.category);
+    descriptionController =
+        TextEditingController(text: widget.reciepeOfIndexForEditng.description);
+    ingredientsController =
+        TextEditingController(text: widget.reciepeOfIndexForEditng.incredients);
+    proceduresController =
+        TextEditingController(text: widget.reciepeOfIndexForEditng.procedure);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +64,7 @@ class _AddingscreenState extends State<Addingscreen> {
         backgroundColor: const Color(0xFF1EDEC7),
         centerTitle: true,
         title: Text(
-          'Welcome Admin',
+          ' Update',
           style: GoogleFonts.poppins(fontSize: 23, fontWeight: FontWeight.w700),
         ),
       ),
@@ -57,31 +76,54 @@ class _AddingscreenState extends State<Addingscreen> {
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 15),
-                  child: Container(
+                  child: SizedBox(
                     width: 160,
                     height: 160,
-                    decoration: BoxDecoration(
-                      image: selectedImage == null
-                          ? null
-                          : DecorationImage(
-                              image: FileImage(selectedImage!),
-                              fit: BoxFit.cover,
-                            ),
+                    child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      color: const Color.fromARGB(255, 205, 202, 202),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Display the selected image or show an icon to add a photo
+                          selectedImage == null
+                              ? IconButton(
+                                  onPressed: () async {
+                                    File? selectedImages =
+                                        await selectImageFromGallery(context);
+                                    setState(() {
+                                      selectedImage = selectedImages;
+                                    });
+                                  },
+                                  icon: const Icon(Icons.add_a_photo),
+                                )
+                              : Image.file(
+                                  selectedImage!,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                          // You can add an edit icon or button here
+                          // This is just an example; customize it as needed
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: InkWell(
+                              onTap: () async {
+                                File? selectedImages =
+                                    await selectImageFromGallery(context);
+                                setState(() {
+                                  selectedImage = selectedImages;
+                                });
+                              },
+                              child: const Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: selectedImage == null
-                        ? IconButton(
-                            onPressed: () async {
-                              File? selectedImages =
-                                  await selectImageFromGallery(context);
-                              setState(() {
-                                selectedImage = selectedImages;
-                              });
-                            },
-                            icon: const Icon(Icons.add_a_photo),
-                          )
-                        : null,
                   ),
                 ),
               ),
@@ -107,6 +149,7 @@ class _AddingscreenState extends State<Addingscreen> {
               SizedBox(
                 width: 350,
                 child: TextFormField(
+                  keyboardType: TextInputType.number,
                   controller: timeController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -125,6 +168,7 @@ class _AddingscreenState extends State<Addingscreen> {
               SizedBox(
                 width: 350,
                 child: TextFormField(
+                  maxLines: null,
                   controller: descriptionController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -153,13 +197,16 @@ class _AddingscreenState extends State<Addingscreen> {
                       child: Text(category),
                     );
                   }).toList(),
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    categoryController.text = value!;
+                  },
                 ),
               ),
               const SizedBox(height: 20),
               SizedBox(
                 width: 350,
                 child: TextFormField(
+                  maxLines: null,
                   controller: ingredientsController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -178,6 +225,7 @@ class _AddingscreenState extends State<Addingscreen> {
               SizedBox(
                 width: 350,
                 child: TextFormField(
+                  maxLines: null,
                   controller: proceduresController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -202,7 +250,9 @@ class _AddingscreenState extends State<Addingscreen> {
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     if (selectedImage != null) {
+                      print(categoryController.text);
                       final variableReceipes = Recipes(
+                        timeKey: widget.reciepeOfIndexForEditng.timeKey,
                         title: titleController.text,
                         time: timeController.text,
                         description: descriptionController.text,
@@ -215,7 +265,9 @@ class _AddingscreenState extends State<Addingscreen> {
                         // ProfileImage: _image?.path ?? "",
                       );
 
-                      addRecipe(variableReceipes);
+                      // addRecipe(variableReceipes);
+                      updateRecipe(variableReceipes,
+                          widget.reciepeOfIndexForEditng.timeKey ?? '');
 
                       titleController.clear();
 
@@ -224,7 +276,6 @@ class _AddingscreenState extends State<Addingscreen> {
                       categoryController.clear();
                       ingredientsController.clear();
                       proceduresController.clear();
-                      selectedImage = null;
                     }
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const Admingridview(),
@@ -238,7 +289,7 @@ class _AddingscreenState extends State<Addingscreen> {
                   }
                 },
                 child: Text(
-                  'Add',
+                  'update',
                   style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                 ),
               )

@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:recipely/datas/hive_db.dart';
-import 'package:recipely/loginpage/login_page.dart';
+import 'package:recipely/Screens/loginpage/login_page.dart';
 import 'package:recipely/models/model_recipe.dart';
 import 'package:recipely/models/user_model.dart';
+import 'package:recipely/userhome/detail_page.dart';
+import 'package:recipely/userhome/search_page.dart';
 import 'package:recipely/widget/widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,19 +31,10 @@ bool burgersselectbool = false;
 bool saladsselectbool = false;
 bool friesselectbool = false;
 bool arabianselectbool = false;
-List<String> categories = [
-  "Indian",
-  "Chinese",
-  "Italian",
-  "Mexican",
-  "Burgers",
-  "Salads",
-  "Fries",
-  "Arabian"
-];
 String userName = '';
 
 class _HomescreenState extends State<Homescreen> {
+  List<Recipes> recipeslist = [];
   Future<void> fetchUserName() async {
     try {
       final userBox = await Hive.openBox<User>('users');
@@ -54,16 +49,25 @@ class _HomescreenState extends State<Homescreen> {
     }
   }
 
+  String categories = '';
   @override
   void initState() {
     fetchUserName();
+    getrecipesFn();
     super.initState();
+  }
+
+  void getrecipesFn() async {
+    List<Recipes> recipe = await getrecipe();
+    setState(() {
+      recipeslist = recipe;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return SafeArea( 
+    return SafeArea(
       child: Scaffold(
         body: Container(
           padding: const EdgeInsets.all(20),
@@ -141,14 +145,20 @@ class _HomescreenState extends State<Homescreen> {
                   ],
                 ),
                 const SizedBox(height: 15),
-                TextFormField(
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Searchpage(
+                            recipesList: recipeslist, initialCategory: '')));
+                  },
+                  child: TextFormField(
+                    enabled: false,
                     decoration: const InputDecoration(
-                        focusedBorder: OutlineInputBorder(),
-                        label: Text('Search'),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        prefixIcon: Icon(Icons.search))),
+                      label: Text('Search'),
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 10),
                 SizedBox(
                   height: 55,
@@ -159,7 +169,16 @@ class _HomescreenState extends State<Homescreen> {
                           choiceName: 'All',
                           onselected: (value) {
                             setState(() {
+                              categories = '';
                               allselectbool = !allselectbool;
+                              indiaselectbool = false;
+                              chineseselectbool = false;
+                              italianselectbool = false;
+                              mexicanselectbool = false;
+                              burgersselectbool = false;
+                              saladsselectbool = false;
+                              friesselectbool = false;
+                              arabianselectbool = false;
                             });
                           },
                           selected: allselectbool),
@@ -168,7 +187,16 @@ class _HomescreenState extends State<Homescreen> {
                           choiceName: 'India',
                           onselected: (value) {
                             setState(() {
+                              categories = 'India';
                               indiaselectbool = !indiaselectbool;
+                              allselectbool = false;
+                              chineseselectbool = false;
+                              italianselectbool = false;
+                              mexicanselectbool = false;
+                              burgersselectbool = false;
+                              saladsselectbool = false;
+                              friesselectbool = false;
+                              arabianselectbool = false;
                             });
                           },
                           selected: indiaselectbool),
@@ -177,7 +205,16 @@ class _HomescreenState extends State<Homescreen> {
                           choiceName: 'Chinese',
                           onselected: (value) {
                             setState(() {
+                              categories = 'Chinese';
                               chineseselectbool = !chineseselectbool;
+                              indiaselectbool = false;
+                              allselectbool = false;
+                              italianselectbool = false;
+                              mexicanselectbool = false;
+                              burgersselectbool = false;
+                              saladsselectbool = false;
+                              friesselectbool = false;
+                              arabianselectbool = false;
                             });
                           },
                           selected: chineseselectbool),
@@ -186,7 +223,16 @@ class _HomescreenState extends State<Homescreen> {
                           choiceName: 'Italian',
                           onselected: (value) {
                             setState(() {
+                              categories = 'Italian';
                               italianselectbool = !italianselectbool;
+                              indiaselectbool = false;
+                              chineseselectbool = false;
+                              allselectbool = false;
+                              mexicanselectbool = false;
+                              burgersselectbool = false;
+                              saladsselectbool = false;
+                              friesselectbool = false;
+                              arabianselectbool = false;
                             });
                           },
                           selected: italianselectbool),
@@ -195,7 +241,16 @@ class _HomescreenState extends State<Homescreen> {
                           choiceName: 'Mexican',
                           onselected: (value) {
                             setState(() {
+                              categories = 'Mexican';
                               mexicanselectbool = !mexicanselectbool;
+                              indiaselectbool = false;
+                              chineseselectbool = false;
+                              italianselectbool = false;
+                              allselectbool = false;
+                              burgersselectbool = false;
+                              saladsselectbool = false;
+                              friesselectbool = false;
+                              arabianselectbool = false;
                             });
                           },
                           selected: mexicanselectbool),
@@ -204,7 +259,16 @@ class _HomescreenState extends State<Homescreen> {
                           choiceName: 'Burgers',
                           onselected: (value) {
                             setState(() {
+                              categories = 'Burgers';
                               burgersselectbool = !burgersselectbool;
+                              indiaselectbool = false;
+                              chineseselectbool = false;
+                              italianselectbool = false;
+                              mexicanselectbool = false;
+                              allselectbool = false;
+                              saladsselectbool = false;
+                              friesselectbool = false;
+                              arabianselectbool = false;
                             });
                           },
                           selected: burgersselectbool),
@@ -213,7 +277,16 @@ class _HomescreenState extends State<Homescreen> {
                           choiceName: 'Salads',
                           onselected: (value) {
                             setState(() {
+                              categories = 'Salads';
                               saladsselectbool = !saladsselectbool;
+                              indiaselectbool = false;
+                              chineseselectbool = false;
+                              italianselectbool = false;
+                              mexicanselectbool = false;
+                              burgersselectbool = false;
+                              allselectbool = false;
+                              friesselectbool = false;
+                              arabianselectbool = false;
                             });
                           },
                           selected: saladsselectbool),
@@ -222,7 +295,16 @@ class _HomescreenState extends State<Homescreen> {
                           choiceName: 'Fries',
                           onselected: (value) {
                             setState(() {
+                              categories = 'Fries';
                               friesselectbool = !friesselectbool;
+                              indiaselectbool = false;
+                              chineseselectbool = false;
+                              italianselectbool = false;
+                              mexicanselectbool = false;
+                              burgersselectbool = false;
+                              saladsselectbool = false;
+                              allselectbool = false;
+                              arabianselectbool = false;
                             });
                           },
                           selected: friesselectbool),
@@ -231,7 +313,16 @@ class _HomescreenState extends State<Homescreen> {
                           choiceName: 'Arabian',
                           onselected: (value) {
                             setState(() {
+                              categories = 'Arabian';
                               arabianselectbool = !arabianselectbool;
+                              indiaselectbool = false;
+                              chineseselectbool = false;
+                              italianselectbool = false;
+                              mexicanselectbool = false;
+                              burgersselectbool = false;
+                              saladsselectbool = false;
+                              friesselectbool = false;
+                              allselectbool = false;
                             });
                           },
                           selected: arabianselectbool),
@@ -246,75 +337,95 @@ class _HomescreenState extends State<Homescreen> {
                         return const CircularProgressIndicator();
                       } else {
                         List<Recipes> recipeslist = snapshot.data!;
+                        for (var element in recipeslist) {
+                          print(element.category);
+                        }
+
+                        recipeslist = recipeslist
+                            .where((element) => element.category
+                                .toLowerCase()
+                                .contains(categories.toLowerCase()))
+                            .toList();
+
                         return SizedBox(
                           height: size.height / 3.4,
                           child: ListView.separated(
+                            physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemCount: recipeslist.length,
                             itemBuilder: (context, index) {
                               final recipe = recipeslist[index];
-                              return SizedBox(
-                                width: size.width / 2,
-                                height: size.height / 3.4,
-                                child: Stack(
-                                  children: [
-                                    Positioned(
-                                      top: 40,
-                                      child: Container(
-                                        height: 200,
-                                        width: size.width / 2,
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                            color: const Color.fromARGB(
-                                                255, 220, 218, 218),
-                                            borderRadius:
-                                                BorderRadius.circular(18)),
-                                        child: Column(
-                                          children: [
-                                            const SizedBox(
-                                              height: 90,
-                                            ),
-                                            Text(
-                                              recipe.title,
-                                              style: const TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Align(
-                                              alignment: Alignment.topLeft,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  const Icon(Icons.alarm),
-                                                  Text(
-                                                    '${recipe.time} min',
-                                                    style: const TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  )
-                                                ],
+                              return InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        RecipeDetails(recipeModel: recipe),
+                                  ));
+                                },
+                                child: SizedBox(
+                                  width: size.width / 2,
+                                  height: size.height / 3.4,
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        top: 40,
+                                        child: Container(
+                                          height: 200,
+                                          width: size.width / 2,
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                              color: const Color.fromARGB(
+                                                  255, 220, 218, 218),
+                                              borderRadius:
+                                                  BorderRadius.circular(18)),
+                                          child: Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 90,
                                               ),
-                                            ),
-                                          ],
+                                              Text(
+                                                recipe.title,
+                                                style: const TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                              const SizedBox(height: 5),
+                                              Align(
+                                                alignment: Alignment.bottomLeft,
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Icon(Icons.update),
+                                                    Text(
+                                                      '${recipe.time} min',
+                                                      style: const TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.topCenter,
-                                      child: Positioned(
-                                        top: 0,
-                                        child: CircleAvatar(
-                                          backgroundImage:
-                                              FileImage(File(recipe.photo)),
-                                          radius: 65,
-                                          backgroundColor: Colors.blue,
+                                      Align(
+                                        alignment: Alignment.topCenter,
+                                        child: Positioned(
+                                          top: 0,
+                                          child: CircleAvatar(
+                                            backgroundImage:
+                                                FileImage(File(recipe.photo)),
+                                            radius: 65,
+                                            backgroundColor: Colors.blue,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               );
                             },
@@ -327,55 +438,75 @@ class _HomescreenState extends State<Homescreen> {
                 const Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    'New Recipes',
+                    'Recipes For YOu',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
-                ),const SizedBox(height: 20,),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                      color: const Color(0xFF484848),
-                      borderRadius: BorderRadius.circular(18)),
-                  child: const Column(children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Text(
-                                'data',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(height: 20),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Icon(
-                                      Icons.alarm,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      'time',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w100),
-                                    )
-                                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                CarouselSlider(
+                  options: CarouselOptions(
+                    autoPlay: true,
+                    height: 180,
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    autoPlayAnimationDuration:
+                        const Duration(milliseconds: 2000),
+                    autoPlayInterval: const Duration(seconds: 3),
+                    enlargeCenterPage: true,
+                    enlargeFactor: 1,
+                    animateToClosest: true,
+                    viewportFraction: 0.9,
+                    onPageChanged: (index, reason) {},
+                  ),
+                  items: recipeslist.map((recipe) {
+                    return InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              RecipeDetails(recipeModel: recipe),
+                        ));
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Stack(
+                          children: [
+                            Image.file(
+                              File(recipe.photo),
+                              fit: BoxFit.fitWidth,
+                              width: 370,
+                            ),
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(0.6),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                            Positioned(
+                              bottom: 10,
+                              left: 10,
+                              child: Text(
+                                recipe.title,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 20,
+                                  color: Colors.white.withOpacity(0.6),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        CircleAvatar(
-                          radius: 60,
-                        )
-                      ],
-                    ),
-                  ]),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ],
             ),

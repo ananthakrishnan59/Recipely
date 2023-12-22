@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:recipely/introscreens/intro_screen_1.dart';
-import 'package:recipely/introscreens/intro_screen_2.dart';
-import 'package:recipely/introscreens/intro_screen_3.dart';
-import 'package:recipely/loginpage/login_page.dart';
+import 'package:recipely/Screens/introscreens/intro_screen_2.dart';
+import 'package:recipely/Screens/introscreens/intro_screen_3.dart';
+import 'package:recipely/Screens/loginpage/login_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
+import 'intro_screen_1.dart';
 class OnBordingScreen extends StatefulWidget {
   const OnBordingScreen({super.key});
 

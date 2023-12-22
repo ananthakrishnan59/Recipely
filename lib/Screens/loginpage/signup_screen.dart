@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:lottie/lottie.dart';
-import 'package:recipely/loginpage/login_page.dart';
+import 'package:recipely/Screens/loginpage/login_page.dart';
 import 'package:recipely/models/user_model.dart';
 
 
@@ -14,7 +14,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  bool _passwordVisible = false;
+  bool _passwordVisible = false;bool _cpasswordVisible = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -100,9 +100,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         },
                       ),
                       const SizedBox(height: 27),
-                      TextFormField(
+                      TextFormField( 
                         controller: passwordController,
-                        obscureText: true,
+                        obscureText: !_passwordVisible,
                         decoration: InputDecoration(
                           labelText: 'PASSWORD',
                           suffixIcon: IconButton(
@@ -128,16 +128,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(height: 27),
                       TextFormField(
                         controller: confirmPasswordController,
-                        obscureText: true,
+                        obscureText:! _cpasswordVisible,
                         decoration: InputDecoration(
                           labelText: 'CONFIRM PASSWORD',
                           suffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
-                                _passwordVisible = !_passwordVisible;
+                                _cpasswordVisible = !_cpasswordVisible;
                               });
                             },
-                            icon: Icon(_passwordVisible
+                            icon: Icon(_cpasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off),
                           ),
