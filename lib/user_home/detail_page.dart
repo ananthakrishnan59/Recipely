@@ -5,16 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:recipely/models/model_recipe.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-class RecipeDetails extends StatelessWidget {
+class RecipeDetails extends StatefulWidget {
   final Recipes recipeModel;
+
   const RecipeDetails({
+    Key? key,
     required this.recipeModel,
-  });
+  }) : super(key: key);
+
+  @override
+  State<RecipeDetails> createState() => _RecipeDetailsState();
+}
+
+class _RecipeDetailsState extends State<RecipeDetails> {
+  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final _textTheme = Theme.of(context).textTheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: SlidingUpPanel(
         parallaxEnabled: true,
@@ -46,31 +56,34 @@ class RecipeDetails extends StatelessWidget {
                 height: 30,
               ),
               Text(
-                recipeModel.title,
-                style: _textTheme.headline6,
+                widget.recipeModel.title,
+                style: textTheme.headline6,
               ),
               const SizedBox(
                 height: 10,
               ),
               Text(
-                recipeModel.description, // Assuming description is the description of the recipe
-                style: _textTheme.caption,
+                widget.recipeModel.description,
+                style: textTheme.caption,
               ),
               const SizedBox(
                 height: 10,
               ),
               Row(
                 children: [
-                  const Icon(
-                    Icons.favorite,
-                    color: Colors.red,
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isFavorite = !isFavorite;
+                      });
+                    },
+                    child: Icon(
+                      Icons.favorite,
+                      color: isFavorite ? Colors.red : Colors.grey,
+                    ),
                   ),
                   const SizedBox(
                     width: 5,
-                  ),
-                  
-                  const SizedBox(
-                    width: 10,
                   ),
                   const Icon(
                     Icons.timer,
@@ -79,7 +92,7 @@ class RecipeDetails extends StatelessWidget {
                     width: 4,
                   ),
                   Text(
-                    recipeModel.time,
+                    widget.recipeModel.time,
                   ),
                   const SizedBox(
                     width: 20,
@@ -116,7 +129,6 @@ class RecipeDetails extends StatelessWidget {
                           Tab(
                             text: "Preparation".toUpperCase(),
                           ),
-                          
                         ],
                         labelColor: Colors.black,
                         unselectedLabelColor: Colors.black.withOpacity(0.3),
@@ -134,16 +146,15 @@ class RecipeDetails extends StatelessWidget {
                       Expanded(
                         child: TabBarView(
                           children: [
-                            Ingredients(recipeModel: recipeModel),
+                            Ingredients(recipeModel: widget.recipeModel),
                             SingleChildScrollView(
                               child: Container(
-                                child: Text(recipeModel.procedure ),
+                                child: Text(widget.recipeModel.procedure),
                               ),
                             ),
-                          
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -158,19 +169,18 @@ class RecipeDetails extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Hero(
-                    tag: recipeModel.photo,
+                    tag: widget.recipeModel.photo,
                     child: ClipRRect(
                       child: Image(
                         width: double.infinity,
                         height: (size.height / 2) + 50,
                         fit: BoxFit.cover,
-                        image: FileImage(File(recipeModel.photo)),
+                        image: FileImage(File(widget.recipeModel.photo)),
                       ),
                     ),
                   ),
                 ],
               ),
-             
               Positioned(
                 top: 40,
                 left: 20,
@@ -191,14 +201,13 @@ class RecipeDetails extends StatelessWidget {
   }
 }
 
-// ignore: must_be_immutable
 class Ingredients extends StatelessWidget {
-   Ingredients({
-    Key? key,
-     required this.recipeModel,
-  }) : super(key: key);
+  final Recipes recipeModel;
 
- Recipes recipeModel;
+  const Ingredients({
+    Key? key,
+    required this.recipeModel,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -207,15 +216,15 @@ class Ingredients extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 12.0),
         child: Column(
           children: [
-             Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 2.0,
-                  ),
-                  child: Text(
-                   recipeModel.incredients,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 2.0,
+              ),
+              child: Text(
+                recipeModel.incredients,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
           ],
         ),
       ),

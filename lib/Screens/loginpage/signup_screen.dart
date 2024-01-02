@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:lottie/lottie.dart';
-import 'package:recipely/Screens/loginpage/login_page.dart';
+import 'package:recipely/screens/loginpage/login_page.dart';
 import 'package:recipely/models/user_model.dart';
 
 

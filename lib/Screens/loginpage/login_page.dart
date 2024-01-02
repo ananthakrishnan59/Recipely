@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:lottie/lottie.dart';
-import 'package:recipely/Screens/adminscreen/admin_page.dart';
-import 'package:recipely/Screens/loginpage/signup_screen.dart';
+import 'package:recipely/screens/adminscreen/admin_page.dart';
+import 'package:recipely/screens/loginpage/signup_screen.dart';
 import 'package:recipely/models/user_model.dart';
-import 'package:recipely/userhome/bottom_navigation.dart';
+import 'package:recipely/user_home/bottom_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Loginpage extends StatefulWidget {

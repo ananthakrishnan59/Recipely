@@ -1,8 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:recipely/userhome/favorite_page.dart';
-import 'package:recipely/userhome/home_page.dart';
-import 'package:recipely/userhome/profile_page.dart';
+import 'package:recipely/user_home/favorite_page.dart';
+import 'package:recipely/user_home/home_page.dart';
+import 'package:recipely/user_home/profile_page.dart';
 
 class Bottomnavigationscreen extends StatefulWidget {
   const Bottomnavigationscreen({Key? key, this.userEmailId}) : super(key: key);

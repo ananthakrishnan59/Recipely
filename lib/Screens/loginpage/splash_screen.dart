@@ -2,8 +2,8 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:recipely/Screens/introscreens/onbording_screens.dart';
-import 'package:recipely/userhome/bottom_navigation.dart';
+import 'package:recipely/screens/introscreens/onbording_screens.dart';
+import 'package:recipely/user_home/bottom_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {

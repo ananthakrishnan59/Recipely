@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:recipely/Screens/adminscreen/admin_gridview.dart';
+import 'package:recipely/screens/adminscreen/admin_gridview.dart';
 
 class AdminLogin extends StatefulWidget {
   const AdminLogin({

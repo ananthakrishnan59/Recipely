@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:recipely/models/model_recipe.dart';
-import 'package:recipely/userhome/detail_page.dart';
-// Assuming your RecipeDetails file is named recipe_details.dart
+import 'package:recipely/user_home/detail_page.dart';
 
 class Searchpage extends StatefulWidget {
   const Searchpage(
@@ -27,15 +26,17 @@ class _SearchpageState extends State<Searchpage> {
     super.initState();
     widget.recipesList.isNotEmpty ? print('true') : print('false');
     filteredRecipesList = widget.recipesList.toList();
-    filteredRecipesList.sort((a, b) => a.title.compareTo(b.title));
+    // filteredRecipesList.sort((a, b) => a.title.compareTo(b.title));
+    filterRecipes('');
   }
 
-  void filterRecipes(String query) {
+  filterRecipes(String query) {
     setState(() {
       filteredRecipesList = widget.recipesList
           .where((recipe) =>
               recipe.title.toLowerCase().contains(query.toLowerCase()))
           .toList();
+      filteredRecipesList.sort((a, b) => a.time.compareTo(b.time));
     });
   }
 
@@ -66,7 +67,7 @@ class _SearchpageState extends State<Searchpage> {
                       final recipe = filteredRecipesList[index];
 
                       // Check if the image file exists
-                      final imageFile = File(recipe.photo);
+                      final imageFile = File(recipe.photo as String);
                       if (!imageFile.existsSync()) {
                         return InkWell(
                           child: Container(),
@@ -81,7 +82,8 @@ class _SearchpageState extends State<Searchpage> {
                           // Navigate to RecipeDetails page when an item is tapped
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => RecipeDetails(recipeModel: recipe),
+                              builder: (context) =>
+                                  RecipeDetails(recipeModel: recipe),
                             ),
                           );
                         },
@@ -111,7 +113,8 @@ class _SearchpageState extends State<Searchpage> {
                             child: Text(
                               "Your Item is NOt Cooked Yet",
                               style: GoogleFonts.poppins(
-                                  color: const Color.fromARGB(255, 109, 108, 108),
+                                  color:
+                                      const Color.fromARGB(255, 109, 108, 108),
                                   fontSize: 17,
                                   fontWeight: FontWeight.w700),
                             ),

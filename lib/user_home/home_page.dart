@@ -7,8 +7,9 @@ import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/Screens/loginpage/login_page.dart';
 import 'package:recipely/models/model_recipe.dart';
 import 'package:recipely/models/user_model.dart';
-import 'package:recipely/userhome/detail_page.dart';
-import 'package:recipely/userhome/search_page.dart';
+import 'package:recipely/user_home/detail_page.dart';
+import 'package:recipely/user_home/search_page.dart';
+
 import 'package:recipely/widget/widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -391,22 +392,19 @@ class _HomescreenState extends State<Homescreen> {
                                                         FontWeight.w600),
                                               ),
                                               const SizedBox(height: 5),
-                                              Align(
-                                                alignment: Alignment.bottomLeft,
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Icon(Icons.update),
-                                                    Text(
-                                                      '${recipe.time} min',
-                                                      style: const TextStyle(
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    )
-                                                  ],
-                                                ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const Icon(Icons.update),
+                                                  Text(
+                                                    '${recipe.time} min',
+                                                    style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  )
+                                                ],
                                               ),
                                             ],
                                           ),
@@ -414,14 +412,11 @@ class _HomescreenState extends State<Homescreen> {
                                       ),
                                       Align(
                                         alignment: Alignment.topCenter,
-                                        child: Positioned(
-                                          top: 0,
-                                          child: CircleAvatar(
-                                            backgroundImage:
-                                                FileImage(File(recipe.photo)),
-                                            radius: 65,
-                                            backgroundColor: Colors.blue,
-                                          ),
+                                        child: CircleAvatar(
+                                          backgroundImage:
+                                              FileImage(File(recipe.photo)),
+                                          radius: 65,
+                                          backgroundColor: Colors.blue,
                                         ),
                                       ),
                                     ],

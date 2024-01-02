@@ -5,9 +5,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:recipely/Screens/adminscreen/admin_gridview.dart';
+import 'package:recipely/screens/adminscreen/admin_gridview.dart';
 import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/models/model_recipe.dart';
+import 'package:recipely/util/refactory.dart';
 
 class Addingscreen extends StatefulWidget {
   const Addingscreen({Key? key}) : super(key: key);
@@ -85,117 +86,79 @@ class _AddingscreenState extends State<Addingscreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 350,
-                child: TextFormField(
-                  controller: titleController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Title is required';
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    TextFormFieldWidget(
+                        controller: titleController,
+                        hintText: "Title",
+                        labelText: "Title",validator:(value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Title is required';
+                        }
+                        return null;
+                           }, ),
+                    const SizedBox(height: 20),
+                    TextFormFieldWidget(
+                        controller: timeController,
+                        hintText: "Time",
+                        labelText: "Time",validator: (value) {
+                         if (value == null || value.isEmpty) {
+                         return 'Time is required';
+                       }
+                          return null;
+                       },),
+                    const SizedBox(height: 20),
+                    TextFormFieldWidget(
+                        controller: descriptionController,
+                        maxLines: null,validator:  (value) {
+                           if (value == null || value.isEmpty) {
+                         return 'Description is required';
+                         }
+                        return null;
+                         },
+                        hintText: "Description",
+                        labelText: "Description"),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Categories",
+                      ),
+                      items: categories.map((String category) {
+                        return DropdownMenuItem(
+                          value: category,
+                          child: Text(category),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        categoryController.text = value!;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormFieldWidget(
+                        controller: ingredientsController,
+                        hintText: "Incredients",maxLines: null,
+                        labelText: "Incredients",validator: (value) {
+                       if (value == null || value.isEmpty) {
+                       return 'Incredients is required';
+        }
+                  return null;
+                  },),
+                    const SizedBox(height: 20),
+                    TextFormFieldWidget(
+                        controller: proceduresController,maxLines: null,
+                        hintText: "Procedure",
+                        labelText: "Procedure",validator: (value) {
+                   if (value == null || value.isEmpty) {
+                 return 'Procedure is required';
                     }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Title",
-                    labelText: "Title",
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 350,
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  controller: timeController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Time required for making is required';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Time required for making",
-                    labelText: "Time required for making",
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 350,
-                child: TextFormField(
-                  maxLines: null,
-                  controller: descriptionController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Description is required';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Add description",
-                    labelText: "Add description",
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 350,
-                child: DropdownButtonFormField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Categories",
-                  ),
-                  items: categories.map((String category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(category),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    categoryController.text = value!;
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 350,
-                child: TextFormField(
-                  maxLines: null,
-                  controller: ingredientsController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Ingredients are required';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Ingredients",
-                    labelText: " Ingredients",
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 350,
-                child: TextFormField(
-                  maxLines: null,
-                  controller: proceduresController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Procedures are required';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Procedures",
-                    labelText: " Procedures",
-                  ),
+        return null;
+      },),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
               const SizedBox(
@@ -215,7 +178,7 @@ class _AddingscreenState extends State<Addingscreen> {
                         category: categoryController.text,
                         procedure: proceduresController.text,
                         // Use an empty string if selectImage is null
-                        photo: selectedImage?.path ?? "",
+                        photo: selectedImage?.path ?? '',
                         incredients: ingredientsController.text,
                         // favoritesUserIds: [],
                         // ProfileImage: _image?.path ?? "",
@@ -258,6 +221,8 @@ class _AddingscreenState extends State<Addingscreen> {
   void snackbarFunction(
       BuildContext context, String s, MaterialAccentColor redAccent) {}
 }
+
+
 
 Future<File?> selectImageFromGallery(BuildContext context) async {
   File? image;

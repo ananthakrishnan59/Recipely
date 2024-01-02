@@ -23,15 +23,16 @@ class Recipes {
 
   @HiveField(6)
   final String time;
-  
-  @HiveField(7)
-   String ?timeKey;
 
+  @HiveField(7)
+  String? timeKey;
+  
 
   // @HiveField(7)
   // List<String> favoritesUserIds;
 
-  Recipes( {this.timeKey,
+  Recipes({
+    this.timeKey,
     required this.title,
     required this.description,
     required this.photo,
