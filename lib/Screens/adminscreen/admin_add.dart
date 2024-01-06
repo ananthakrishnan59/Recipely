@@ -92,33 +92,40 @@ class _AddingscreenState extends State<Addingscreen> {
                   children: [
                     const SizedBox(height: 20),
                     TextFormFieldWidget(
-                        controller: titleController,
-                        hintText: "Title",
-                        labelText: "Title",validator:(value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Title is required';
+                      controller: titleController,
+                      hintText: "Title",
+                      labelText: "Title",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Title is required';
                         }
                         return null;
-                           }, ),
+                      },
+                    ),
                     const SizedBox(height: 20),
                     TextFormFieldWidget(
-                        controller: timeController,
-                        hintText: "Time",
-                        labelText: "Time",validator: (value) {
-                         if (value == null || value.isEmpty) {
-                         return 'Time is required';
-                       }
-                          return null;
-                       },),
+                    
+                      controller: timeController,
+                      
+                      hintText: "Time",
+                      labelText: "Time",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Time is required';
+                        }
+                        return null;
+                      },
+                    ),
                     const SizedBox(height: 20),
                     TextFormFieldWidget(
                         controller: descriptionController,
-                        maxLines: null,validator:  (value) {
-                           if (value == null || value.isEmpty) {
-                         return 'Description is required';
-                         }
-                        return null;
-                         },
+                        maxLines: null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Description is required';
+                          }
+                          return null;
+                        },
                         hintText: "Description",
                         labelText: "Description"),
                     const SizedBox(height: 20),
@@ -139,24 +146,30 @@ class _AddingscreenState extends State<Addingscreen> {
                     ),
                     const SizedBox(height: 20),
                     TextFormFieldWidget(
-                        controller: ingredientsController,
-                        hintText: "Incredients",maxLines: null,
-                        labelText: "Incredients",validator: (value) {
-                       if (value == null || value.isEmpty) {
-                       return 'Incredients is required';
-        }
-                  return null;
-                  },),
+                      controller: ingredientsController,
+                      hintText: "Incredients",
+                      maxLines: null,
+                      labelText: "Incredients",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Incredients is required';
+                        }
+                        return null;
+                      },
+                    ),
                     const SizedBox(height: 20),
                     TextFormFieldWidget(
-                        controller: proceduresController,maxLines: null,
-                        hintText: "Procedure",
-                        labelText: "Procedure",validator: (value) {
-                   if (value == null || value.isEmpty) {
-                 return 'Procedure is required';
-                    }
-        return null;
-      },),
+                      controller: proceduresController,
+                      maxLines: null,
+                      hintText: "Procedure",
+                      labelText: "Procedure",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Procedure is required';
+                        }
+                        return null;
+                      },
+                    ),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -172,17 +185,18 @@ class _AddingscreenState extends State<Addingscreen> {
                   if (formKey.currentState!.validate()) {
                     if (selectedImage != null) {
                       final variableReceipes = Recipes(
-                        title: titleController.text,
-                        time: timeController.text,
-                        description: descriptionController.text,
-                        category: categoryController.text,
-                        procedure: proceduresController.text,
-                        // Use an empty string if selectImage is null
-                        photo: selectedImage?.path ?? '',
-                        incredients: ingredientsController.text,
-                        // favoritesUserIds: [],
-                        // ProfileImage: _image?.path ?? "",
-                      );
+                          title: titleController.text,
+                          time: timeController.text,
+                          description: descriptionController.text,
+                          category: categoryController.text,
+                          procedure: proceduresController.text,
+                          // Use an empty string if selectImage is null
+                          photo: selectedImage?.path ?? '',
+                          incredients: ingredientsController.text,
+                          favoritesUserIds: []
+                          // favoritesUserIds: [],
+                          // ProfileImage: _image?.path ?? "",
+                          );
 
                       addRecipe(variableReceipes);
 
@@ -221,8 +235,6 @@ class _AddingscreenState extends State<Addingscreen> {
   void snackbarFunction(
       BuildContext context, String s, MaterialAccentColor redAccent) {}
 }
-
-
 
 Future<File?> selectImageFromGallery(BuildContext context) async {
   File? image;

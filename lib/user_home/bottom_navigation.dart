@@ -1,12 +1,13 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/user_home/favorite_page.dart';
 import 'package:recipely/user_home/home_page.dart';
 import 'package:recipely/user_home/profile_page.dart';
 
 class Bottomnavigationscreen extends StatefulWidget {
   const Bottomnavigationscreen({Key? key, this.userEmailId}) : super(key: key);
-  final String ?userEmailId;
+  final String? userEmailId;
   @override
   State<Bottomnavigationscreen> createState() => _BottomnavigationscreenState();
 }
@@ -16,8 +17,9 @@ class _BottomnavigationscreenState extends State<Bottomnavigationscreen> {
   List<Widget> page = [];
   @override
   void initState() {
+    getFavorites();
     super.initState();
-    page = [ Homescreen(userEmailId: widget.userEmailId), const Favoritescreen(), const Profilescreen()];
+    page = [Homescreen(), const Favoritescreen(), UserProfileScreen()];
   }
 
   @override

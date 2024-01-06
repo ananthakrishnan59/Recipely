@@ -5,7 +5,7 @@ part 'user_model.g.dart';
 class User {
   @HiveField(0)
   String username;
-  
+
   @HiveField(1)
   String email;
 
@@ -13,8 +13,14 @@ class User {
   String password;
 
   @HiveField(3)
-  String id;
+  String? id;
 
-
-  User({required this.username,required this.email, required this.password, required this.id});
+  @HiveField(4)
+  String ?image;
+  User(
+      {required this.username,
+      required this.email,
+      required this.password,
+      this.id,
+      this.image});
 }

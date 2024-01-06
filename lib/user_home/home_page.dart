@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:recipely/datas/hive_db.dart';
-import 'package:recipely/Screens/loginpage/login_page.dart';
+import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/models/model_recipe.dart';
 import 'package:recipely/models/user_model.dart';
 import 'package:recipely/user_home/detail_page.dart';
 import 'package:recipely/user_home/search_page.dart';
-
 import 'package:recipely/widget/widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({
@@ -38,21 +36,23 @@ class _HomescreenState extends State<Homescreen> {
   List<Recipes> recipeslist = [];
   Future<void> fetchUserName() async {
     try {
+      String? name = await shared_preferences.getName();
       final userBox = await Hive.openBox<User>('users');
-      User? user =
-          userBox.values.firstWhere((user) => user.email == widget.userEmailId);
+      User? user = userBox.values.firstWhere((user) => user.email == name);
       setState(() {
-        userName = user.username;
+        userName = user.username; // Provide a default username if user is null
       });
+      print(name);
     } catch (e) {
-      // Handle exceptions, e.g., user not found
       print('Error fetching username: $e');
+      print(userName);
     }
   }
 
   String categories = '';
   @override
   void initState() {
+    getFavorites();
     fetchUserName();
     getrecipesFn();
     super.initState();
@@ -99,47 +99,47 @@ class _HomescreenState extends State<Homescreen> {
                     ),
                     InkWell(
                       onTap: () {
-                        showDialog(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text("Logout"),
-                              content: const Text(
-                                  "Are you sure you want to logout?"),
-                              actions: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0Xff188F79),
-                                  ),
-                                  onPressed: () async {
-                                    final prefs =
-                                        await SharedPreferences.getInstance();
-                                    prefs.clear().then((value) {
-                                      // Navigate to the login page
-                                      Navigator.of(context).pushAndRemoveUntil(
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                const Loginpage()),
-                                        (Route route) => false,
-                                      );
-                                    });
-                                  },
-                                  child: const Text("YES"),
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0Xff188F79),
-                                  ),
-                                  onPressed: () async {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text("CANCEL"),
-                                )
-                              ],
-                            );
-                          },
-                        );
+                        // showDialog(
+                        //   barrierDismissible: false,
+                        //   context: context,
+                        //   builder: (context) {
+                        //     return AlertDialog(
+                        //       title: const Text("Logout"),
+                        //       content: const Text(
+                        //           "Are you sure you want to logout?"),
+                        //       actions: [
+                        //         ElevatedButton(
+                        //           style: ElevatedButton.styleFrom(
+                        //             backgroundColor: const Color(0Xff188F79),
+                        //           ),
+                        //           onPressed: () async {
+                        //             final prefs =
+                        //                 await SharedPreferences.getInstance();
+                        //             prefs.clear().then((value) {
+                        //               // Navigate to the login page
+                        //               Navigator.of(context).pushAndRemoveUntil(
+                        //                 MaterialPageRoute(
+                        //                     builder: (BuildContext context) =>
+                        //                         const Loginpage()),
+                        //                 (Route route) => false,
+                        //               );
+                        //             });
+                        //           },
+                        //           child: const Text("YES"),
+                        //         ),
+                        //         ElevatedButton(
+                        //           style: ElevatedButton.styleFrom(
+                        //             backgroundColor: const Color(0Xff188F79),
+                        //           ),
+                        //           onPressed: () async {
+                        //             Navigator.of(context).pop();
+                        //           },
+                        //           child: const Text("CANCEL"),
+                        //         )
+                        //       ],
+                        //     );
+                        //   },
+                        // );
                       },
                       child: const CircleAvatar(),
                     )

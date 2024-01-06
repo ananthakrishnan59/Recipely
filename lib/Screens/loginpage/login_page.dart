@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:lottie/lottie.dart';
+import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/screens/adminscreen/admin_page.dart';
 import 'package:recipely/screens/loginpage/signup_screen.dart';
 import 'package:recipely/models/user_model.dart';
@@ -21,6 +22,7 @@ class _LoginpageState extends State<Loginpage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   String _errorText = '';
+  int? loggedInUserIndex;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,32 +130,38 @@ class _LoginpageState extends State<Loginpage> {
                             });
                             return;
                           }
+                          for (var i = 0; i < usersBox.length; i++) {
+                            if (user.email == emailController.text &&
+                                user.password == passwordController.text) {
+                              loggedInUserIndex = i;
 
-                          if (user.email == emailController.text &&
-                              user.password == passwordController.text) {
-                            SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
-                            prefs.setBool('isLoggedIn', true);
-                            // ignore: use_build_context_synchronously
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                     Bottomnavigationscreen(userEmailId: emailController.text),
-                              ),
-                            );
-                            //  snackbar
-                            // ignore: use_build_context_synchronously
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Welcome, ${user.username}!'),
-                                duration: const Duration(seconds: 2),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          } else {
-                            setState(() {
-                              _errorText = 'Invalid username or password';
-                            });
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setInt(
+                                  'loggedInUserIndexKey', loggedInUserIndex!);
+                              prefs.setBool('isLoggedIn', true);
+                              shared_preferences.setname(user.email);
+                              // ignore: use_build_context_synchronously
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => Bottomnavigationscreen(
+                                      userEmailId: emailController.text),
+                                ),
+                              );
+                              //  snackbar
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Welcome, ${user.username}!'),
+                                  duration: const Duration(seconds: 2),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } else {
+                              setState(() {
+                                _errorText = 'Invalid username or password';
+                              });
+                            }
                           }
                         } else {
                           setState(() {

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:recipely/datas/hive_db.dart';
+import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/models/model_recipe.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -18,7 +20,21 @@ class RecipeDetails extends StatefulWidget {
 }
 
 class _RecipeDetailsState extends State<RecipeDetails> {
-  bool isFavorite = false;
+  ValueNotifier<bool> isFavorite = ValueNotifier(false);
+
+  Future<void> getUser() async {
+    final username = await shared_preferences.getName();
+    isFavorite.value = widget.recipeModel.favoritesUserIds.contains(username);
+    print(isFavorite.value);
+    print(username);
+  }
+
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+    print(isFavorite);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,13 +90,18 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        isFavorite = !isFavorite;
+                        isFavorite.value = !isFavorite.value;
+                           addAndRemoveFavorite(widget.recipeModel);
                       });
                     },
-                    child: Icon(
-                      Icons.favorite,
-                      color: isFavorite ? Colors.red : Colors.grey,
-                    ),
+                    child: ValueListenableBuilder(
+                        valueListenable: isFavorite,
+                        builder: (context, value, _) {
+                          return Icon(
+                            Icons.favorite,
+                            color: isFavorite.value ? Colors.red : Colors.grey,
+                          );
+                        }),
                   ),
                   const SizedBox(
                     width: 5,

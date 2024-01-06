@@ -2,6 +2,7 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/screens/introscreens/onbording_screens.dart';
 import 'package:recipely/user_home/bottom_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool isUserLoggedIn = false;
+  String? usernameKey;
   @override
   void initState() {
     super.initState();
@@ -23,10 +25,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool userKey = prefs.getBool('isLoggedIn')??false;
-      setState(() {
-        isUserLoggedIn = userKey;
-      });  
+    bool userKey = prefs.getBool('isLoggedIn') ?? false;
+    setState(() {
+      isUserLoggedIn = userKey;
+    });
   }
 
   @override
@@ -61,7 +63,10 @@ class _SplashScreenState extends State<SplashScreen> {
         duration: 1500,
         splashTransition: SplashTransition.fadeTransition,
         splashIconSize: 500,
-        nextScreen: isUserLoggedIn==true?const Bottomnavigationscreen():const OnBordingScreen()
-        );
+        nextScreen: isUserLoggedIn == true
+            ? Bottomnavigationscreen(
+                userEmailId: shared_preferences.nameKey,
+              )
+            : const OnBordingScreen());
   }
 }

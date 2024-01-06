@@ -26,10 +26,9 @@ class Recipes {
 
   @HiveField(7)
   String? timeKey;
-  
 
-  // @HiveField(7)
-  // List<String> favoritesUserIds;
+  @HiveField(8)
+  final List<String> favoritesUserIds;
 
   Recipes({
     this.timeKey,
@@ -40,6 +39,7 @@ class Recipes {
     required this.procedure,
     required this.incredients,
     required this.time,
-    // required this.favoritesUserIds,
+    required this.favoritesUserIds,
+    String? imageUrl,
   });
 }

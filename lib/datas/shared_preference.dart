@@ -6,7 +6,7 @@ class shared_preferences {
 
   static Future<bool> setname(String name) async {
     final SharedPreferences sf = await SharedPreferences.getInstance();
-    print('name');
+
     return await sf.setString(nameKey, name);
   }
 

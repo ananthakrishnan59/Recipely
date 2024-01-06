@@ -16,6 +16,7 @@ Future<void> main() async {
   await Hive.openBox<User>('users');
   await Hive.openBox<Recipes>('recipes');
   runApp(const MyApp());
+  
 }
 
 class MyApp extends StatelessWidget {

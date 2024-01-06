@@ -133,38 +133,42 @@ class _AddingscreenState extends State<Updatescrren> {
                 padding: const EdgeInsets.all(15.0),
                 child: Column(
                   children: [
-                     TextFormFieldWidget(
-                          controller: titleController,
-                          hintText: "Title",
-                          labelText: "Title",validator:(value) {
+                    TextFormFieldWidget(
+                      controller: titleController,
+                      hintText: "Title",
+                      labelText: "Title",
+                      validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Title is required';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormFieldWidget(
+                      controller: timeController,
+                      hintText: "Time",
+                      labelText: "Time",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Time is required';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormFieldWidget(
+                        controller: descriptionController,
+                        maxLines: null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Description is required';
                           }
                           return null;
-                             }, ),
-                      const SizedBox(height: 20),
-                      TextFormFieldWidget(
-                          controller: timeController,
-                          hintText: "Time",
-                          labelText: "Time",validator: (value) {
-                           if (value == null || value.isEmpty) {
-                           return 'Time is required';
-                         }
-                            return null;
-                         },),
-                      const SizedBox(height: 20),
-                      TextFormFieldWidget(
-                          controller: descriptionController,
-                          maxLines: null,validator:  (value) {
-                             if (value == null || value.isEmpty) {
-                           return 'Description is required';
-                           }
-                          return null;
-                           },
-                          hintText: "Description",
-                          labelText: "Description"),
-                      const SizedBox(height: 20),
-                   
+                        },
+                        hintText: "Description",
+                        labelText: "Description"),
+                    const SizedBox(height: 20),
                     SizedBox(
                       width: 350,
                       child: DropdownButtonFormField(
@@ -182,26 +186,33 @@ class _AddingscreenState extends State<Updatescrren> {
                           categoryController.text = value!;
                         },
                       ),
-                    ),   const SizedBox(height: 20),   
-                         TextFormFieldWidget(
-                          controller: ingredientsController,
-                          hintText: "Incredients",maxLines: null,
-                          labelText: "Incredients",validator: (value) {
-                         if (value == null || value.isEmpty) {
-                         return 'Incredients is required';
-                      }
-                    return null;
-                    },),
-                      const SizedBox(height: 20),
-                      TextFormFieldWidget(
-                          controller: proceduresController,maxLines: null,
-                          hintText: "Procedure",
-                          labelText: "Procedure",validator: (value) {
-                     if (value == null || value.isEmpty) {
-                   return 'Procedure is required';
-                      }
-                      return null;
-                       },),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormFieldWidget(
+                      controller: ingredientsController,
+                      hintText: "Incredients",
+                      maxLines: null,
+                      labelText: "Incredients",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Incredients is required';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormFieldWidget(
+                      controller: proceduresController,
+                      maxLines: null,
+                      hintText: "Procedure",
+                      labelText: "Procedure",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Procedure is required';
+                        }
+                        return null;
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -217,18 +228,20 @@ class _AddingscreenState extends State<Updatescrren> {
                     if (selectedImage != null) {
                       print(categoryController.text);
                       final variableReceipes = Recipes(
-                        timeKey: widget.reciepeOfIndexForEditng.timeKey,
-                        title: titleController.text,
-                        time: timeController.text,
-                        description: descriptionController.text,
-                        category: categoryController.text,
-                        procedure: proceduresController.text,
-                        // Use an empty string if selectImage is null
-                        photo: selectedImage?.path ?? '',
-                        incredients: ingredientsController.text,
-                        // favoritesUserIds: [],
-                        // ProfileImage: _image?.path ?? "",
-                      );
+                          timeKey: widget.reciepeOfIndexForEditng.timeKey,
+                          title: titleController.text,
+                          time: timeController.text,
+                          description: descriptionController.text,
+                          category: categoryController.text,
+                          procedure: proceduresController.text,
+                          // Use an empty string if selectImage is null
+                          photo: selectedImage?.path ?? '',
+                          incredients: ingredientsController.text,
+                          favoritesUserIds:
+                              widget.reciepeOfIndexForEditng.favoritesUserIds
+                          // favoritesUserIds: [],
+                          // ProfileImage: _image?.path ?? "",
+                          );
 
                       // addRecipe(variableReceipes);
                       updateRecipe(variableReceipes,

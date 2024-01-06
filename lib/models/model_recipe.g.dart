@@ -25,13 +25,14 @@ class RecipesAdapter extends TypeAdapter<Recipes> {
       procedure: fields[4] as String,
       incredients: fields[5] as String,
       time: fields[6] as String,
+      favoritesUserIds: (fields[8] as List).cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Recipes obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class RecipesAdapter extends TypeAdapter<Recipes> {
       ..writeByte(6)
       ..write(obj.time)
       ..writeByte(7)
-      ..write(obj.timeKey);
+      ..write(obj.timeKey)
+      ..writeByte(8)
+      ..write(obj.favoritesUserIds);
   }
 
   @override
