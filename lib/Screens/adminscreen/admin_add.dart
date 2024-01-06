@@ -17,7 +17,7 @@ class Addingscreen extends StatefulWidget {
   State<Addingscreen> createState() => _AddingscreenState();
 }
 
-File? selectedImage;
+List<File?> selectedImage = [];
 String category = "Indian";
 List<String> categories = [
   "Indian",
@@ -62,23 +62,25 @@ class _AddingscreenState extends State<Addingscreen> {
                     width: 160,
                     height: 160,
                     decoration: BoxDecoration(
-                      image: selectedImage == null
+                      image: selectedImage.isEmpty
                           ? null
                           : DecorationImage(
-                              image: FileImage(selectedImage!),
+                              image: FileImage(selectedImage[0]!),
                               fit: BoxFit.cover,
                             ),
                       borderRadius: BorderRadius.circular(5),
                       color: const Color.fromARGB(255, 205, 202, 202),
                     ),
-                    child: selectedImage == null
+                    child: selectedImage.isEmpty
                         ? IconButton(
                             onPressed: () async {
-                              File? selectedImages =
+                              final images =
                                   await selectImageFromGallery(context);
-                              setState(() {
-                                selectedImage = selectedImages;
-                              });
+                              if (images != null) {
+                                setState(() {
+                                  selectedImage = images;
+                                });
+                              }
                             },
                             icon: const Icon(Icons.add_a_photo),
                           )
@@ -104,9 +106,7 @@ class _AddingscreenState extends State<Addingscreen> {
                     ),
                     const SizedBox(height: 20),
                     TextFormFieldWidget(
-                    
                       controller: timeController,
-                      
                       hintText: "Time",
                       labelText: "Time",
                       validator: (value) {
@@ -183,7 +183,7 @@ class _AddingscreenState extends State<Addingscreen> {
                         MaterialStatePropertyAll(Color(0xFF1EDEC7))),
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
-                    if (selectedImage != null) {
+                    if (selectedImage.isNotEmpty) {
                       final variableReceipes = Recipes(
                           title: titleController.text,
                           time: timeController.text,
@@ -191,7 +191,7 @@ class _AddingscreenState extends State<Addingscreen> {
                           category: categoryController.text,
                           procedure: proceduresController.text,
                           // Use an empty string if selectImage is null
-                          photo: selectedImage?.path ?? '',
+                          photo: selectedImage.map((e) => e!.path).toList(),
                           incredients: ingredientsController.text,
                           favoritesUserIds: []
                           // favoritesUserIds: [],
@@ -207,7 +207,7 @@ class _AddingscreenState extends State<Addingscreen> {
                       categoryController.clear();
                       ingredientsController.clear();
                       proceduresController.clear();
-                      selectedImage = null;
+                      selectedImage = [];
                     }
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const Admingridview(),
@@ -216,7 +216,7 @@ class _AddingscreenState extends State<Addingscreen> {
                     snackbarFunction(context, "Datas uploaded successfully ",
                         Colors.amberAccent);
                     setState(() {
-                      selectedImage = null;
+                      selectedImage = [];
                     });
                   }
                 },
@@ -236,18 +236,17 @@ class _AddingscreenState extends State<Addingscreen> {
       BuildContext context, String s, MaterialAccentColor redAccent) {}
 }
 
-Future<File?> selectImageFromGallery(BuildContext context) async {
-  File? image;
+Future<List<File>?> selectImageFromGallery(BuildContext context) async {
   try {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      image = File(pickedImage.path);
+    final pickedImage = await ImagePicker().pickMultiImage();
+    if (pickedImage.isEmpty) {
+      return null;
     }
+    return pickedImage.map((e) => File(e.path)).toList();
   } catch (e) {
     snackBarImage(e.toString(), context);
   }
-  return image;
+  return null;
 }
 
 void snackBarImage(String content, BuildContext context) {

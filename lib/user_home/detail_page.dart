@@ -91,7 +91,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                     onTap: () {
                       setState(() {
                         isFavorite.value = !isFavorite.value;
-                           addAndRemoveFavorite(widget.recipeModel);
+                        addAndRemoveFavorite(widget.recipeModel);
                       });
                     },
                     child: ValueListenableBuilder(
@@ -189,17 +189,47 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Hero(
-                    tag: widget.recipeModel.photo,
-                    child: ClipRRect(
-                      child: Image(
-                        width: double.infinity,
-                        height: (size.height / 2) + 50,
-                        fit: BoxFit.cover,
-                        image: FileImage(File(widget.recipeModel.photo)),
-                      ),
-                    ),
-                  ),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   height: 200,
+                  //   child: ListView.separated(
+                  //     shrinkWrap: true,
+                  //     itemCount: widget.recipeModel.photo.length,
+                  //     scrollDirection: Axis.horizontal,
+                  //     separatorBuilder: (context, index) =>
+                  //         const SizedBox(width: 10),
+                  //     itemBuilder: (context, index) => ClipRRect(
+                  //       child: Image(
+                  //         width: double.infinity,
+                  //         height: (size.height / 2) + 50,
+                  //         fit: BoxFit.cover,
+                  //         image: FileImage(File(widget.recipeModel.photo[0])),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // )
+                 Container(
+  height: MediaQuery.of(context).size.height * 0.5, // Adjust the multiplier as needed
+  width: MediaQuery.of(context).size.width,
+  color: Colors.amber,
+  child: ListView.builder(
+    scrollDirection: Axis.horizontal,
+    itemCount: widget.recipeModel.photo.length,
+    itemBuilder: (context, index) => Container(
+      height: MediaQuery.of(context).size.height * 0.5, // Adjust the multiplier as needed
+      width: MediaQuery.of(context).size.width * 1.2,// Adjust the multiplier as needed
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: FileImage(
+            File(widget.recipeModel.photo[index]),
+          ),
+        ),
+      ),
+    ),
+  ),
+)
+
                 ],
               ),
               Positioned(

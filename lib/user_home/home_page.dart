@@ -414,7 +414,7 @@ class _HomescreenState extends State<Homescreen> {
                                         alignment: Alignment.topCenter,
                                         child: CircleAvatar(
                                           backgroundImage:
-                                              FileImage(File(recipe.photo)),
+                                              FileImage(File(recipe.photo[0])),
                                           radius: 65,
                                           backgroundColor: Colors.blue,
                                         ),
@@ -467,7 +467,7 @@ class _HomescreenState extends State<Homescreen> {
                         child: Stack(
                           children: [
                             Image.file(
-                              File(recipe.photo),
+                              File(recipe.photo[0]),
                               fit: BoxFit.fitWidth,
                               width: 370,
                             ),

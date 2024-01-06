@@ -52,7 +52,7 @@ class _AdmingridviewState extends State<Admingridview> {
           itemCount: datalist.length,
           itemBuilder: (context, index) {
             // ignore: unnecessary_cast
-            File imageFile = File(datalist[index].photo as String);
+            File imageFile = File(datalist[index].photo[0] as String);
 
             String timeKey = datalist[index].timeKey ?? '';
             return GestureDetector(

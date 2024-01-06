@@ -8,7 +8,6 @@ import 'package:recipely/screens/adminscreen/admin_add.dart';
 import 'package:recipely/user_home/profile_page.dart';
 import 'package:recipely/util/user_profile_ref.dart';
 
-
 class UserProfileEdit extends StatefulWidget {
   final User? userdetails;
   final int? index;
@@ -29,7 +28,8 @@ class _UserProfileEditState extends State<UserProfileEdit> {
 
   File? _selectedImage;
 
-RegExp get _emailRegex => RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+  RegExp get _emailRegex =>
+      RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
 
   RegExp get _nameRegex => RegExp(r'^[a-zA-Z ]+$');
   RegExp get _passwordRegex => RegExp(r'^(?=.*[0-9].*[0-9].*[0-9])[0-9]+$');
@@ -43,7 +43,7 @@ RegExp get _emailRegex => RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$'
     passwordcontroller =
         TextEditingController(text: widget.userdetails!.password.toString());
     _selectedImage = widget.userdetails?.image != null
-        ? File(widget.userdetails!.image??'')
+        ? File(widget.userdetails!.image ?? '')
         : null;
   }
 
@@ -85,10 +85,9 @@ RegExp get _emailRegex => RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$'
                     maxRadius: 60,
                     child: GestureDetector(
                         onTap: () async {
-                          File? selectedImages =
-                              await selectImageFromGallery(context);
+                          final images = await selectImageFromGallery(context);
                           setState(() {
-                            _selectedImage = selectedImages;
+                            if (images != null) _selectedImage = images[0];
                           });
                         },
                         child: _selectedImage != null
@@ -148,27 +147,26 @@ RegExp get _emailRegex => RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$'
     );
   }
 
-validate() {
-  final isvalid = _formKey.currentState?.validate();
-  if (isvalid!) {
-    final value = User(
-      image: _selectedImage?.path ?? '', 
-      username: namecontroller.text.trim(),
-      email: emailcontroller.text,
-      password: passwordcontroller.text.trim(),
-    );
+  validate() {
+    final isvalid = _formKey.currentState?.validate();
+    if (isvalid!) {
+      final value = User(
+        image: _selectedImage?.path ?? '',
+        username: namecontroller.text.trim(),
+        email: emailcontroller.text,
+        password: passwordcontroller.text.trim(),
+      );
 
-    updateUserInDb(value, widget.index!);
+      updateUserInDb(value, widget.index!);
 
-    Navigator.of(context)
-        .pushReplacement(MaterialPageRoute(builder: (context) {
-      return const UserProfileScreen();
-    }));
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Successfully Update'),
-      backgroundColor: Colors.green,
-    ));
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (context) {
+        return const UserProfileScreen();
+      }));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Successfully Update'),
+        backgroundColor: Colors.green,
+      ));
+    }
   }
-}
-
 }

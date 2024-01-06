@@ -18,7 +18,7 @@ class Updatescrren extends StatefulWidget {
   State<Updatescrren> createState() => _AddingscreenState();
 }
 
-File? selectedImage;
+List<File>? selectedImage = [];
 String category = "Indian";
 List<String> categories = [
   "Indian",
@@ -42,7 +42,8 @@ class _AddingscreenState extends State<Updatescrren> {
 
   @override
   void initState() {
-    selectedImage = File(widget.reciepeOfIndexForEditng.photo as String);
+    selectedImage =
+        widget.reciepeOfIndexForEditng.photo.map((e) => File(e)).toList();
     titleController =
         TextEditingController(text: widget.reciepeOfIndexForEditng.title);
     timeController =
@@ -89,16 +90,18 @@ class _AddingscreenState extends State<Updatescrren> {
                           selectedImage == null
                               ? IconButton(
                                   onPressed: () async {
-                                    File? selectedImages =
+                                    final images =
                                         await selectImageFromGallery(context);
-                                    setState(() {
-                                      selectedImage = selectedImages;
-                                    });
+                                    if (images != null) {
+                                      setState(() {
+                                        selectedImage = images;
+                                      });
+                                    }
                                   },
                                   icon: const Icon(Icons.add_a_photo),
                                 )
                               : Image.file(
-                                  selectedImage!,
+                                  selectedImage![0],
                                   width: double.infinity,
                                   height: double.infinity,
                                   fit: BoxFit.cover,
@@ -110,10 +113,10 @@ class _AddingscreenState extends State<Updatescrren> {
                             right: 8,
                             child: InkWell(
                               onTap: () async {
-                                File? selectedImages =
+                                final images =
                                     await selectImageFromGallery(context);
                                 setState(() {
-                                  selectedImage = selectedImages;
+                                  selectedImage = images;
                                 });
                               },
                               child: const Icon(
@@ -235,7 +238,7 @@ class _AddingscreenState extends State<Updatescrren> {
                           category: categoryController.text,
                           procedure: proceduresController.text,
                           // Use an empty string if selectImage is null
-                          photo: selectedImage?.path ?? '',
+                          photo: selectedImage!.map((e) => e.path).toList(),
                           incredients: ingredientsController.text,
                           favoritesUserIds:
                               widget.reciepeOfIndexForEditng.favoritesUserIds
@@ -282,18 +285,17 @@ class _AddingscreenState extends State<Updatescrren> {
       BuildContext context, String s, MaterialAccentColor redAccent) {}
 }
 
-Future<File?> selectImageFromGallery(BuildContext context) async {
-  File? image;
+Future<List<File>?> selectImageFromGallery(BuildContext context) async {
   try {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      image = File(pickedImage.path);
+    final pickedImage = await ImagePicker().pickMultiImage();
+    if (pickedImage.isEmpty) {
+      return null;
     }
+    return pickedImage.map((e) => File(e.path)).toList();
   } catch (e) {
     snackBarImage(e.toString(), context);
   }
-  return image;
+  return null;
 }
 
 void snackBarImage(String content, BuildContext context) {

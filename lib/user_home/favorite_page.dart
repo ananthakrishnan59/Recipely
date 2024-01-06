@@ -98,49 +98,49 @@ class _FavoritescreenState extends State<Favoritescreen> {
                                             fit: StackFit.expand,
                                             children: [
                                               Image(
-                                                image: FileImage(
-                                                    File(value[index].photo)),
+                                                image: FileImage(File(
+                                                    value[index].photo[0])),
                                                 fit: BoxFit.cover,
-                                        ),
-                                   Container(
-                                    decoration: BoxDecoration(
-                                   gradient: LinearGradient(
-                                     colors: [
-                                   const Color.fromARGB(
-                                        0, 0, 0, 0),
-                                   const Color.fromARGB(
-                                   255, 0, 0, 0)
-                                 .withOpacity(0.5),
-                                 ],
-                                begin: Alignment
-                               .bottomCenter,
-                                  end: Alignment
-                              .bottomCenter)),
-                               ),
-                                 Align(
-                               alignment:
-                             Alignment.bottomCenter,
-                             child: Padding(
-                               padding:
-                             const EdgeInsets.all(8.0),
-                               child: Text(
-                               value[index].title,
+                                              ),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                        colors: [
+                                                      const Color.fromARGB(
+                                                          0, 0, 0, 0),
+                                                      const Color.fromARGB(
+                                                              255, 0, 0, 0)
+                                                          .withOpacity(0.5),
+                                                    ],
+                                                        begin: Alignment
+                                                            .bottomCenter,
+                                                        end: Alignment
+                                                            .bottomCenter)),
+                                              ),
+                                              Align(
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    value[index].title,
                                                     style: GoogleFonts.poppins(
                                                         color: Colors.white),
                                                   ),
-                                                  ),
-                                                  )
-                                                  ],
+                                                ),
+                                              )
+                                            ],
                                           ),
                                         ),
                                       ),
                                     ),
                                   );
                                 }),
-                                  ));
-                               });
-                                },
-                                ),
-                                );
-                                 }
+                          ));
+              });
+        },
+      ),
+    );
+  }
 }

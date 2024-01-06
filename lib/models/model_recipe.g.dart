@@ -20,7 +20,7 @@ class RecipesAdapter extends TypeAdapter<Recipes> {
       timeKey: fields[7] as String?,
       title: fields[0] as String,
       description: fields[1] as String,
-      photo: fields[2] as String,
+      photo: (fields[2] as List).cast<String>(),
       category: fields[3] as String,
       procedure: fields[4] as String,
       incredients: fields[5] as String,

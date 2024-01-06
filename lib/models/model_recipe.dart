@@ -10,7 +10,7 @@ class Recipes {
   final String description;
 
   @HiveField(2)
-  final String photo;
+  final List<String> photo;
 
   @HiveField(3)
   final String category;
@@ -40,6 +40,5 @@ class Recipes {
     required this.incredients,
     required this.time,
     required this.favoritesUserIds,
-    String? imageUrl,
   });
 }
