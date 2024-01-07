@@ -31,6 +31,7 @@ bool saladsselectbool = false;
 bool friesselectbool = false;
 bool arabianselectbool = false;
 String userName = '';
+String? imageUrl;
 
 class _HomescreenState extends State<Homescreen> {
   List<Recipes> recipeslist = [];
@@ -41,6 +42,7 @@ class _HomescreenState extends State<Homescreen> {
       User? user = userBox.values.firstWhere((user) => user.email == name);
       setState(() {
         userName = user.username; // Provide a default username if user is null
+        imageUrl = user.image;
       });
       print(name);
     } catch (e) {
@@ -98,50 +100,8 @@ class _HomescreenState extends State<Homescreen> {
                       ),
                     ),
                     InkWell(
-                      onTap: () {
-                        // showDialog(
-                        //   barrierDismissible: false,
-                        //   context: context,
-                        //   builder: (context) {
-                        //     return AlertDialog(
-                        //       title: const Text("Logout"),
-                        //       content: const Text(
-                        //           "Are you sure you want to logout?"),
-                        //       actions: [
-                        //         ElevatedButton(
-                        //           style: ElevatedButton.styleFrom(
-                        //             backgroundColor: const Color(0Xff188F79),
-                        //           ),
-                        //           onPressed: () async {
-                        //             final prefs =
-                        //                 await SharedPreferences.getInstance();
-                        //             prefs.clear().then((value) {
-                        //               // Navigate to the login page
-                        //               Navigator.of(context).pushAndRemoveUntil(
-                        //                 MaterialPageRoute(
-                        //                     builder: (BuildContext context) =>
-                        //                         const Loginpage()),
-                        //                 (Route route) => false,
-                        //               );
-                        //             });
-                        //           },
-                        //           child: const Text("YES"),
-                        //         ),
-                        //         ElevatedButton(
-                        //           style: ElevatedButton.styleFrom(
-                        //             backgroundColor: const Color(0Xff188F79),
-                        //           ),
-                        //           onPressed: () async {
-                        //             Navigator.of(context).pop();
-                        //           },
-                        //           child: const Text("CANCEL"),
-                        //         )
-                        //       ],
-                        //     );
-                        //   },
-                        // );
-                      },
-                      child: const CircleAvatar(),
+                      onTap: () {},
+                      child: imageUrl==null?const CircleAvatar() :CircleAvatar(backgroundImage: FileImage(File(imageUrl!)),),
                     )
                   ],
                 ),
