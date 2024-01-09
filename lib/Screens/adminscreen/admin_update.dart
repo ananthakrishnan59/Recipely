@@ -152,6 +152,7 @@ class _AddingscreenState extends State<Updatescrren> {
                       controller: timeController,
                       hintText: "Time",
                       labelText: "Time",
+                      keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Time is required';

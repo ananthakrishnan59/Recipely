@@ -50,95 +50,93 @@ class _FavoritescreenState extends State<Favoritescreen> {
       body: ValueListenableBuilder(
         valueListenable: favoriteNotifier,
         builder: (context, value, child) {
-          return ListView.builder(
-              itemCount: value.length,
-              itemBuilder: (context, index) {
-                return Container(
-                    decoration: const BoxDecoration(),
-                    child: value.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'No favoriyes yet!',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          )
-                        : SizedBox(
-                            height: size.height,
-                            child: GridView.builder(
-                                physics: const BouncingScrollPhysics(),
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 1,
-                                        crossAxisSpacing: 4.0,
-                                        mainAxisSpacing: 4.0),
-                                itemCount: value.length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: Container(
-                                      width: 120,
-                                      height: 100,
-                                      decoration: BoxDecoration(
-                                          color: Colors.teal,
-                                          borderRadius:
-                                              BorderRadius.circular(16)),
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.of(context)
-                                              .push(MaterialPageRoute(
-                                            builder: (context) => RecipeDetails(
-                                              recipeModel: value[index],
-                                            ),
-                                          ));
-                                        },
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          child: Stack(
-                                            fit: StackFit.expand,
-                                            children: [
-                                              Image(
-                                                image: FileImage(File(
-                                                    value[index].photo[0])),
-                                                fit: BoxFit.cover,
-                                              ),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                        colors: [
-                                                      const Color.fromARGB(
-                                                          0, 0, 0, 0),
-                                                      const Color.fromARGB(
-                                                              255, 0, 0, 0)
-                                                          .withOpacity(0.5),
-                                                    ],
-                                                        begin: Alignment
-                                                            .bottomCenter,
-                                                        end: Alignment
-                                                            .bottomCenter)),
-                                              ),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomCenter,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                    value[index].title,
-                                                    style: GoogleFonts.poppins(
-                                                        color: Colors.white),
-                                                  ),
-                                                ),
-                                              )
-                                            ],
+          return value.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No favoriyes yet!',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: value.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                        decoration: const BoxDecoration(),
+                        child: SizedBox(
+                          height: size.height,
+                          child: GridView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 1,
+                                      crossAxisSpacing: 4.0,
+                                      mainAxisSpacing: 4.0),
+                              itemCount: value.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Container(
+                                    width: 120,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                        color: Colors.teal,
+                                        borderRadius:
+                                            BorderRadius.circular(16)),
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (context) => RecipeDetails(
+                                            recipeModel: value[index],
                                           ),
+                                        ));
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(16),
+                                        child: Stack(
+                                          fit: StackFit.expand,
+                                          children: [
+                                            Image(
+                                              image: FileImage(
+                                                  File(value[index].photo[0])),
+                                              fit: BoxFit.cover,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                      colors: [
+                                                    const Color.fromARGB(
+                                                        0, 0, 0, 0),
+                                                    const Color.fromARGB(
+                                                            255, 0, 0, 0)
+                                                        .withOpacity(0.5),
+                                                  ],
+                                                      begin: Alignment
+                                                          .bottomCenter,
+                                                      end: Alignment
+                                                          .bottomCenter)),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  value[index].title,
+                                                  style: GoogleFonts.poppins(
+                                                      color: Colors.white),
+                                                ),
+                                              ),
+                                            )
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  );
-                                }),
-                          ));
-              });
+                                  ),
+                                );
+                              }),
+                        ));
+                  });
         },
       ),
     );

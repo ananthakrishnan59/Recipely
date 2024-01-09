@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:recipely/datas/hive_db.dart';
@@ -41,7 +42,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     Size size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
+    return Scaffold(backgroundColor: Colors.black,
       body: SlidingUpPanel(
         parallaxEnabled: true,
         borderRadius: const BorderRadius.only(
@@ -186,52 +187,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
         body: SingleChildScrollView(
           child: Stack(
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  // SizedBox(
-                  //   width: double.infinity,
-                  //   height: 200,
-                  //   child: ListView.separated(
-                  //     shrinkWrap: true,
-                  //     itemCount: widget.recipeModel.photo.length,
-                  //     scrollDirection: Axis.horizontal,
-                  //     separatorBuilder: (context, index) =>
-                  //         const SizedBox(width: 10),
-                  //     itemBuilder: (context, index) => ClipRRect(
-                  //       child: Image(
-                  //         width: double.infinity,
-                  //         height: (size.height / 2) + 50,
-                  //         fit: BoxFit.cover,
-                  //         image: FileImage(File(widget.recipeModel.photo[0])),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // )
-                 Container(
-  height: MediaQuery.of(context).size.height * 0.5, // Adjust the multiplier as needed
-  width: MediaQuery.of(context).size.width,
-  color: Colors.amber,
-  child: ListView.builder(
-    scrollDirection: Axis.horizontal,
-    itemCount: widget.recipeModel.photo.length,
-    itemBuilder: (context, index) => Container(
-      height: MediaQuery.of(context).size.height * 0.5, // Adjust the multiplier as needed
-      width: MediaQuery.of(context).size.width * 1.2,// Adjust the multiplier as needed
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image: FileImage(
-            File(widget.recipeModel.photo[index]),
-          ),
-        ),
-      ),
-    ),
-  ),
-)
-
-                ],
-              ),
+              RecipeImagesCarousel(photoList: widget.recipeModel.photo),
               Positioned(
                 top: 40,
                 left: 20,
@@ -247,6 +203,45 @@ class _RecipeDetailsState extends State<RecipeDetails> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class RecipeImagesCarousel extends StatelessWidget {
+  final List<String> photoList;
+
+  const RecipeImagesCarousel({
+    Key? key,
+    required this.photoList,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(color: Colors.black,
+      child: CarouselSlider(
+        options: CarouselOptions(
+          height: MediaQuery.of(context).size.height * 0.5,
+          enlargeCenterPage: true,
+          autoPlay: true,
+          aspectRatio: 2.0,
+        ),
+        items: photoList.map((photo) {
+          return Builder(
+            builder: (BuildContext context) {
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                // margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: FileImage(File(photo)),
+                  ),
+                ),
+              );
+            },
+          );
+        }).toList(),
       ),
     );
   }

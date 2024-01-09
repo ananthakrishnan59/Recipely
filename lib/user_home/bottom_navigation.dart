@@ -19,7 +19,7 @@ class _BottomnavigationscreenState extends State<Bottomnavigationscreen> {
   void initState() {
     getFavorites();
     super.initState();
-    page = [Homescreen(), const Favoritescreen(), UserProfileScreen()];
+    page = [Homescreen(), const Favoritescreen(), const UserProfileScreen()];
   }
 
   @override

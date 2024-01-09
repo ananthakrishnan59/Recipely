@@ -8,7 +8,6 @@ import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/models/user_model.dart';
 import 'package:recipely/screens/loginpage/login_page.dart';
 import 'package:recipely/user_home/bottom_navigation.dart';
-import 'package:recipely/user_home/home_page.dart';
 import 'package:recipely/user_home/profile_edit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

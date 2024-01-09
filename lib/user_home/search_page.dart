@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:recipely/models/model_recipe.dart';
 import 'package:recipely/user_home/detail_page.dart';
+import 'package:recipely/widget/widget.dart';
 
 class Searchpage extends StatefulWidget {
   const Searchpage(
@@ -20,13 +21,14 @@ class Searchpage extends StatefulWidget {
 
 class _SearchpageState extends State<Searchpage> {
   late List<Recipes> filteredRecipesList;
-
+  String selectedFilter = 'All';
   @override
   void initState() {
     super.initState();
     widget.recipesList.isNotEmpty ? print('true') : print('false');
     filteredRecipesList = widget.recipesList.toList();
     // filteredRecipesList.sort((a, b) => a.title.compareTo(b.title));
+    filteredRecipesList = widget.recipesList.toList();
     filterRecipes('');
   }
 
@@ -36,12 +38,42 @@ class _SearchpageState extends State<Searchpage> {
           .where((recipe) =>
               recipe.title.toLowerCase().contains(query.toLowerCase()))
           .toList();
+      if (selectedFilter != 'All') {
+        // Apply additional filtering based on the selected filter
+        if (selectedFilter == '0-15') {
+          filteredRecipesList = filteredRecipesList
+              .where((recipe) =>
+                  int.parse(recipe.time) >= 0 && int.parse(recipe.time) <= 15)
+              .toList();
+        } else if (selectedFilter == '16-30') {
+          filteredRecipesList = filteredRecipesList
+              .where((recipe) =>
+                  int.parse(recipe.time) >= 16 && int.parse(recipe.time) <= 30)
+              .toList();
+        } else if (selectedFilter == '31-45') {
+          filteredRecipesList = filteredRecipesList
+              .where((recipe) =>
+                  int.parse(recipe.time) >= 31 && int.parse(recipe.time) <= 45)
+              .toList();
+        } else if (selectedFilter == '46-60') {
+          filteredRecipesList = filteredRecipesList
+              .where((recipe) =>
+                  int.parse(recipe.time) >= 46 && int.parse(recipe.time) <= 60)
+              .toList();
+        } else if (selectedFilter == '60+') {
+          filteredRecipesList = filteredRecipesList
+              .where((recipe) => int.parse(recipe.time) >= 60)
+              .toList();
+        }
+      }
+
       filteredRecipesList.sort((a, b) => a.time.compareTo(b.time));
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF1EDEC7),
@@ -59,6 +91,41 @@ class _SearchpageState extends State<Searchpage> {
               ),
             ),
           ),
+          const SizedBox(width: 10),
+          Container(
+            padding: EdgeInsets.only(left: 20, right: 20),
+            width: size.width - 20,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Color.fromARGB(255, 252, 249, 249),
+              border: Border.all(color: Colors.black, width: 1),
+            ),
+            child: DropdownButton<String>(
+              borderRadius: BorderRadius.circular(20),
+              dropdownColor: Color.fromARGB(255, 241, 239, 239),
+              value: selectedFilter,
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedFilter = newValue!;
+                  filterRecipes('');
+                });
+              },
+              isExpanded: true,
+              items: <String>['All', '0-15', '16-30', '31-45', '46-60', '60+']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1EDEC7),
+                        fontSize: 18),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
           Expanded(
             child: filteredRecipesList.isNotEmpty
                 ? ListView.builder(
@@ -67,7 +134,7 @@ class _SearchpageState extends State<Searchpage> {
                       final recipe = filteredRecipesList[index];
 
                       // Check if the image file exists
-                      final imageFile = File(recipe.photo as String);
+                      final imageFile = File(recipe.photo[0]);
                       if (!imageFile.existsSync()) {
                         return InkWell(
                           child: Container(),

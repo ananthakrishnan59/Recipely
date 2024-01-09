@@ -109,15 +109,18 @@ class _AddingscreenState extends State<Addingscreen> {
                       controller: timeController,
                       hintText: "Time",
                       labelText: "Time",
+                    keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Time is required';
                         }
                         return null;
                       },
+                    
                     ),
                     const SizedBox(height: 20),
                     TextFormFieldWidget(
+                      
                         controller: descriptionController,
                         maxLines: null,
                         validator: (value) {
