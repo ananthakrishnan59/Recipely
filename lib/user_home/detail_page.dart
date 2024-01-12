@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/models/model_recipe.dart';
+import 'package:recipely/util/review.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class RecipeDetails extends StatefulWidget {
@@ -22,6 +23,8 @@ class RecipeDetails extends StatefulWidget {
 
 class _RecipeDetailsState extends State<RecipeDetails> {
   ValueNotifier<bool> isFavorite = ValueNotifier(false);
+  
+  get reviewController => null;
 
   Future<void> getUser() async {
     final username = await shared_preferences.getName();
@@ -42,7 +45,8 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     Size size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(backgroundColor: Colors.black,
+    return Scaffold(
+      backgroundColor: Colors.black,
       body: SlidingUpPanel(
         parallaxEnabled: true,
         borderRadius: const BorderRadius.only(
@@ -137,7 +141,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               ),
               Expanded(
                 child: DefaultTabController(
-                  length: 2,
+                  length: 3,
                   initialIndex: 0,
                   child: Column(
                     children: [
@@ -150,6 +154,9 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                           ),
                           Tab(
                             text: "Preparation".toUpperCase(),
+                          ),
+                          Tab(
+                            text: "Reviews".toUpperCase(),
                           ),
                         ],
                         labelColor: Colors.black,
@@ -170,10 +177,38 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                           children: [
                             Ingredients(recipeModel: widget.recipeModel),
                             SingleChildScrollView(
-                              child: Container(
-                                child: Text(widget.recipeModel.procedure),
-                              ),
+                              child: Text(widget.recipeModel.procedure),
                             ),
+                           Stack(
+                            children: [
+                             const Positioned(
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 45,
+                                  child: Divider(
+                                    thickness: 1.6,
+                                  ),
+                                ),
+                                  Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: ReviewTextField(
+                                    controller: reviewController,
+                                    onTap: () {
+                                      String trimmedText =
+                                          reviewController.text.trim();
+                                      if (trimmedText.isNotEmpty) {
+                                        // addreview (
+                                        //   reviewText: reviewController.text.trim(),
+                                        //   userIdd: userId,
+                                        //   userProfile: userProfile,
+                                        // );
+                                        reviewController.clear();
+                                      }
+                                    },
+                                  ),
+                                ), 
+                            ],
+                           )
                           ],
                         ),
                       ),
@@ -218,7 +253,8 @@ class RecipeImagesCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.black,
+    return Container(
+      color: Colors.black,
       child: CarouselSlider(
         options: CarouselOptions(
           height: MediaQuery.of(context).size.height * 0.5,
