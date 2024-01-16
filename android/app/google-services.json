@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "305928663938",
+    "project_id": "reciply-baf90",
+    "storage_bucket": "reciply-baf90.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:305928663938:android:043f2d5a100ae7957ad59b",
+        "android_client_info": {
+          "package_name": "com.app.recipely"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIG5pBQ-4qJNFnIXho1Bh-chXTpNfYDCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
@@ -75,396 +76,460 @@ class _HomescreenState extends State<Homescreen> {
         body: Container(
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'welcome $userName', // Remove 'const' here
-                            style: const TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w600,
-                            ),
+            child: Column(children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'welcome $userName', // Remove 'const' here
+                          style: const TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.w600,
                           ),
-                          const Text(
-                            'What are you cooking today?',
-                            style: TextStyle(
-                              fontSize: 15,
-                            ),
+                        ),
+                        const Text(
+                          'What are you cooking today?',
+                          style: TextStyle(
+                            fontSize: 15,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    InkWell(
-                      onTap: () {},
-                      child: imageUrl==null?const CircleAvatar() :CircleAvatar(backgroundImage: FileImage(File(imageUrl!)),),
-                    )
+                  ),
+                  InkWell(
+                    onTap: () {},
+                    child: imageUrl == null
+                        ? const CircleAvatar()
+                        : CircleAvatar(
+                            backgroundImage: FileImage(File(imageUrl!)),
+                          ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 15),
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Searchpage(
+                          recipesList: recipeslist, initialCategory: '')));
+                },
+                child: TextFormField(
+                  enabled: false,
+                  decoration: const InputDecoration(
+                    label: Text('Search'),
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 55,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    TransactionChoiceChipWidget(
+                        choiceName: 'All',
+                        onselected: (value) {
+                          setState(() {
+                            categories = '';
+                            allselectbool = !allselectbool;
+                            indiaselectbool = false;
+                            chineseselectbool = false;
+                            italianselectbool = false;
+                            mexicanselectbool = false;
+                            burgersselectbool = false;
+                            saladsselectbool = false;
+                            friesselectbool = false;
+                            arabianselectbool = false;
+                          });
+                        },
+                        selected: allselectbool),
+                    const SizedBox(width: 15),
+                    TransactionChoiceChipWidget(
+                        choiceName: 'India',
+                        onselected: (value) {
+                          setState(() {
+                            categories = 'India';
+                            indiaselectbool = !indiaselectbool;
+                            allselectbool = false;
+                            chineseselectbool = false;
+                            italianselectbool = false;
+                            mexicanselectbool = false;
+                            burgersselectbool = false;
+                            saladsselectbool = false;
+                            friesselectbool = false;
+                            arabianselectbool = false;
+                          });
+                        },
+                        selected: indiaselectbool),
+                    const SizedBox(width: 15),
+                    TransactionChoiceChipWidget(
+                        choiceName: 'Chinese',
+                        onselected: (value) {
+                          setState(() {
+                            categories = 'Chinese';
+                            chineseselectbool = !chineseselectbool;
+                            indiaselectbool = false;
+                            allselectbool = false;
+                            italianselectbool = false;
+                            mexicanselectbool = false;
+                            burgersselectbool = false;
+                            saladsselectbool = false;
+                            friesselectbool = false;
+                            arabianselectbool = false;
+                          });
+                        },
+                        selected: chineseselectbool),
+                    const SizedBox(width: 15),
+                    TransactionChoiceChipWidget(
+                        choiceName: 'Italian',
+                        onselected: (value) {
+                          setState(() {
+                            categories = 'Italian';
+                            italianselectbool = !italianselectbool;
+                            indiaselectbool = false;
+                            chineseselectbool = false;
+                            allselectbool = false;
+                            mexicanselectbool = false;
+                            burgersselectbool = false;
+                            saladsselectbool = false;
+                            friesselectbool = false;
+                            arabianselectbool = false;
+                          });
+                        },
+                        selected: italianselectbool),
+                    const SizedBox(width: 15),
+                    TransactionChoiceChipWidget(
+                        choiceName: 'Mexican',
+                        onselected: (value) {
+                          setState(() {
+                            categories = 'Mexican';
+                            mexicanselectbool = !mexicanselectbool;
+                            indiaselectbool = false;
+                            chineseselectbool = false;
+                            italianselectbool = false;
+                            allselectbool = false;
+                            burgersselectbool = false;
+                            saladsselectbool = false;
+                            friesselectbool = false;
+                            arabianselectbool = false;
+                          });
+                        },
+                        selected: mexicanselectbool),
+                    const SizedBox(width: 15),
+                    TransactionChoiceChipWidget(
+                        choiceName: 'Burgers',
+                        onselected: (value) {
+                          setState(() {
+                            categories = 'Burgers';
+                            burgersselectbool = !burgersselectbool;
+                            indiaselectbool = false;
+                            chineseselectbool = false;
+                            italianselectbool = false;
+                            mexicanselectbool = false;
+                            allselectbool = false;
+                            saladsselectbool = false;
+                            friesselectbool = false;
+                            arabianselectbool = false;
+                          });
+                        },
+                        selected: burgersselectbool),
+                    const SizedBox(width: 15),
+                    TransactionChoiceChipWidget(
+                        choiceName: 'Salads',
+                        onselected: (value) {
+                          setState(() {
+                            categories = 'Salads';
+                            saladsselectbool = !saladsselectbool;
+                            indiaselectbool = false;
+                            chineseselectbool = false;
+                            italianselectbool = false;
+                            mexicanselectbool = false;
+                            burgersselectbool = false;
+                            allselectbool = false;
+                            friesselectbool = false;
+                            arabianselectbool = false;
+                          });
+                        },
+                        selected: saladsselectbool),
+                    const SizedBox(width: 15),
+                    TransactionChoiceChipWidget(
+                        choiceName: 'Fries',
+                        onselected: (value) {
+                          setState(() {
+                            categories = 'Fries';
+                            friesselectbool = !friesselectbool;
+                            indiaselectbool = false;
+                            chineseselectbool = false;
+                            italianselectbool = false;
+                            mexicanselectbool = false;
+                            burgersselectbool = false;
+                            saladsselectbool = false;
+                            allselectbool = false;
+                            arabianselectbool = false;
+                          });
+                        },
+                        selected: friesselectbool),
+                    const SizedBox(width: 15),
+                    TransactionChoiceChipWidget(
+                        choiceName: 'Arabian',
+                        onselected: (value) {
+                          setState(() {
+                            categories = 'Arabian';
+                            arabianselectbool = !arabianselectbool;
+                            indiaselectbool = false;
+                            chineseselectbool = false;
+                            italianselectbool = false;
+                            mexicanselectbool = false;
+                            burgersselectbool = false;
+                            saladsselectbool = false;
+                            friesselectbool = false;
+                            allselectbool = false;
+                          });
+                        },
+                        selected: arabianselectbool),
+                    const SizedBox(width: 15),
                   ],
                 ),
-                const SizedBox(height: 15),
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => Searchpage(
-                            recipesList: recipeslist, initialCategory: '')));
-                  },
-                  child: TextFormField(
-                    enabled: false,
-                    decoration: const InputDecoration(
-                      label: Text('Search'),
-                      prefixIcon: Icon(Icons.search),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 55,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      TransactionChoiceChipWidget(
-                          choiceName: 'All',
-                          onselected: (value) {
-                            setState(() {
-                              categories = '';
-                              allselectbool = !allselectbool;
-                              indiaselectbool = false;
-                              chineseselectbool = false;
-                              italianselectbool = false;
-                              mexicanselectbool = false;
-                              burgersselectbool = false;
-                              saladsselectbool = false;
-                              friesselectbool = false;
-                              arabianselectbool = false;
-                            });
-                          },
-                          selected: allselectbool),
-                      const SizedBox(width: 15),
-                      TransactionChoiceChipWidget(
-                          choiceName: 'India',
-                          onselected: (value) {
-                            setState(() {
-                              categories = 'India';
-                              indiaselectbool = !indiaselectbool;
-                              allselectbool = false;
-                              chineseselectbool = false;
-                              italianselectbool = false;
-                              mexicanselectbool = false;
-                              burgersselectbool = false;
-                              saladsselectbool = false;
-                              friesselectbool = false;
-                              arabianselectbool = false;
-                            });
-                          },
-                          selected: indiaselectbool),
-                      const SizedBox(width: 15),
-                      TransactionChoiceChipWidget(
-                          choiceName: 'Chinese',
-                          onselected: (value) {
-                            setState(() {
-                              categories = 'Chinese';
-                              chineseselectbool = !chineseselectbool;
-                              indiaselectbool = false;
-                              allselectbool = false;
-                              italianselectbool = false;
-                              mexicanselectbool = false;
-                              burgersselectbool = false;
-                              saladsselectbool = false;
-                              friesselectbool = false;
-                              arabianselectbool = false;
-                            });
-                          },
-                          selected: chineseselectbool),
-                      const SizedBox(width: 15),
-                      TransactionChoiceChipWidget(
-                          choiceName: 'Italian',
-                          onselected: (value) {
-                            setState(() {
-                              categories = 'Italian';
-                              italianselectbool = !italianselectbool;
-                              indiaselectbool = false;
-                              chineseselectbool = false;
-                              allselectbool = false;
-                              mexicanselectbool = false;
-                              burgersselectbool = false;
-                              saladsselectbool = false;
-                              friesselectbool = false;
-                              arabianselectbool = false;
-                            });
-                          },
-                          selected: italianselectbool),
-                      const SizedBox(width: 15),
-                      TransactionChoiceChipWidget(
-                          choiceName: 'Mexican',
-                          onselected: (value) {
-                            setState(() {
-                              categories = 'Mexican';
-                              mexicanselectbool = !mexicanselectbool;
-                              indiaselectbool = false;
-                              chineseselectbool = false;
-                              italianselectbool = false;
-                              allselectbool = false;
-                              burgersselectbool = false;
-                              saladsselectbool = false;
-                              friesselectbool = false;
-                              arabianselectbool = false;
-                            });
-                          },
-                          selected: mexicanselectbool),
-                      const SizedBox(width: 15),
-                      TransactionChoiceChipWidget(
-                          choiceName: 'Burgers',
-                          onselected: (value) {
-                            setState(() {
-                              categories = 'Burgers';
-                              burgersselectbool = !burgersselectbool;
-                              indiaselectbool = false;
-                              chineseselectbool = false;
-                              italianselectbool = false;
-                              mexicanselectbool = false;
-                              allselectbool = false;
-                              saladsselectbool = false;
-                              friesselectbool = false;
-                              arabianselectbool = false;
-                            });
-                          },
-                          selected: burgersselectbool),
-                      const SizedBox(width: 15),
-                      TransactionChoiceChipWidget(
-                          choiceName: 'Salads',
-                          onselected: (value) {
-                            setState(() {
-                              categories = 'Salads';
-                              saladsselectbool = !saladsselectbool;
-                              indiaselectbool = false;
-                              chineseselectbool = false;
-                              italianselectbool = false;
-                              mexicanselectbool = false;
-                              burgersselectbool = false;
-                              allselectbool = false;
-                              friesselectbool = false;
-                              arabianselectbool = false;
-                            });
-                          },
-                          selected: saladsselectbool),
-                      const SizedBox(width: 15),
-                      TransactionChoiceChipWidget(
-                          choiceName: 'Fries',
-                          onselected: (value) {
-                            setState(() {
-                              categories = 'Fries';
-                              friesselectbool = !friesselectbool;
-                              indiaselectbool = false;
-                              chineseselectbool = false;
-                              italianselectbool = false;
-                              mexicanselectbool = false;
-                              burgersselectbool = false;
-                              saladsselectbool = false;
-                              allselectbool = false;
-                              arabianselectbool = false;
-                            });
-                          },
-                          selected: friesselectbool),
-                      const SizedBox(width: 15),
-                      TransactionChoiceChipWidget(
-                          choiceName: 'Arabian',
-                          onselected: (value) {
-                            setState(() {
-                              categories = 'Arabian';
-                              arabianselectbool = !arabianselectbool;
-                              indiaselectbool = false;
-                              chineseselectbool = false;
-                              italianselectbool = false;
-                              mexicanselectbool = false;
-                              burgersselectbool = false;
-                              saladsselectbool = false;
-                              friesselectbool = false;
-                              allselectbool = false;
-                            });
-                          },
-                          selected: arabianselectbool),
-                      const SizedBox(width: 15),
-                    ],
-                  ),
-                ),
-                FutureBuilder(
-                    future: getrecipe(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else {
-                        List<Recipes> recipeslist = snapshot.data!;
-                        for (var element in recipeslist) {
-                          print(element.category);
-                        }
-
-                        recipeslist = recipeslist
-                            .where((element) => element.category
-                                .toLowerCase()
-                                .contains(categories.toLowerCase()))
-                            .toList();
-
-                        return SizedBox(
-                          height: size.height / 3.4,
-                          child: ListView.separated(
-                            physics: const BouncingScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: recipeslist.length,
-                            itemBuilder: (context, index) {
-                              final recipe = recipeslist[index];
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        RecipeDetails(recipeModel: recipe),
-                                  ));
-                                },
-                                child: SizedBox(
-                                  width: size.width / 2,
-                                  height: size.height / 3.4,
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        top: 40,
-                                        child: Container(
-                                          height: 200,
-                                          width: size.width / 2,
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              color: const Color.fromARGB(
-                                                  255, 220, 218, 218),
-                                              borderRadius:
-                                                  BorderRadius.circular(18)),
-                                          child: Column(
-                                            children: [
-                                              const SizedBox(
-                                                height: 90,
-                                              ),
-                                              Text(
-                                                recipe.title,
-                                                style: const TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              ),
-                                              const SizedBox(height: 5),
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  const Icon(Icons.update),
-                                                  Text(
-                                                    '${recipe.time} min',
-                                                    style: const TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  )
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.topCenter,
-                                        child: CircleAvatar(
-                                          backgroundImage:
-                                              FileImage(File(recipe.photo[0])),
-                                          radius: 65,
-                                          backgroundColor: Colors.blue,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(width: 10),
-                          ),
-                        );
+              ),
+              FutureBuilder(
+                  future: getrecipe(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else {
+                      List<Recipes> recipeslist = snapshot.data!;
+                      for (var element in recipeslist) {
+                        print(element.category);
                       }
-                    }),
-                const Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    'Recipes For YOu',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
+
+                      recipeslist = recipeslist
+                          .where((element) => element.category
+                              .toLowerCase()
+                              .contains(categories.toLowerCase()))
+                          .toList();
+
+                      return SizedBox(
+                        height: size.height / 3.4,
+                        child: StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('Recipies')
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              } else {
+                                var documents = snapshot.data!.docs;
+                                return ListView.separated(
+                                  physics: const BouncingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: documents.length,
+                                  itemBuilder: (context, index) {
+                                    var documentData = documents[index].data()
+                                        as Map<String, dynamic>;
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (context) => RecipeDetails(
+                                              userName: userName,
+                                              userProfile: imageUrl!,
+                                              recipeModel: Recipes(
+                                                  title: documentData['title'],
+                                                  description: documentData[
+                                                      'description'],
+                                                  photo: List<String>.from(
+                                                      documentData['photo']),
+                                                  category:
+                                                      documentData['category'],
+                                                  procedure:
+                                                      documentData['procedure'],
+                                                  incredients: documentData[
+                                                      'incredients'],
+                                                  time: documentData['time'],
+                                                  favoritesUserIds: List<
+                                                          String>.from(
+                                                      documentData[
+                                                          'favoritesUserIds']))),
+                                        ));
+                                      },
+                                      child: SizedBox(
+                                        width: size.width / 2,
+                                        height: size.height / 3.4,
+                                        child: Stack(
+                                          children: [
+                                            Positioned(
+                                              top: 40,
+                                              child: Container(
+                                                height: 200,
+                                                width: size.width / 2,
+                                                padding:
+                                                    const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                    color: const Color.fromARGB(
+                                                        255, 220, 218, 218),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            18)),
+                                                child: Column(
+                                                  children: [
+                                                    const SizedBox(
+                                                      height: 90,
+                                                    ),
+                                                    Text(
+                                                      documentData['title'],
+                                                      style: const TextStyle(
+                                                          fontSize: 17,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        const Icon(
+                                                            Icons.update),
+                                                        Text(
+                                                          '${documentData['time']} min',
+                                                          style: const TextStyle(
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.topCenter,
+                                              child: CircleAvatar(
+                                                backgroundImage: FileImage(File(
+                                                    documentData['photo'][0])),
+                                                radius: 65,
+                                                backgroundColor: Colors.blue,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(width: 10),
+                                );
+                              }
+                            }),
+                      );
+                    }
+                  }),
+              const Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  'Recipes For YOu',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                CarouselSlider(
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    height: 180,
-                    autoPlayCurve: Curves.fastOutSlowIn,
-                    autoPlayAnimationDuration:
-                        const Duration(milliseconds: 2000),
-                    autoPlayInterval: const Duration(seconds: 3),
-                    enlargeCenterPage: true,
-                    enlargeFactor: 1,
-                    animateToClosest: true,
-                    viewportFraction: 0.9,
-                    onPageChanged: (index, reason) {},
-                  ),
-                  items: recipeslist.map((recipe) {
-                    return InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              RecipeDetails(recipeModel: recipe),
-                        ));
-                      },
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: Stack(
-                          children: [
-                            Image.file(
-                              File(recipe.photo[0]),
-                              fit: BoxFit.fitWidth,
-                              width: 370,
-                            ),
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black.withOpacity(0.6),
-                                    ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('Recipies')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else {
+                    var documents = snapshot.data!.docs;
+                    return CarouselSlider(
+                      options: CarouselOptions(
+                        autoPlay: true,
+                        height: 180,
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        autoPlayAnimationDuration:
+                            const Duration(milliseconds: 2000),
+                        autoPlayInterval: const Duration(seconds: 3),
+                        enlargeCenterPage: true,
+                        enlargeFactor: 1,
+                        animateToClosest: true,
+                        viewportFraction: 0.9,
+                        onPageChanged: (index, reason) {},
+                      ),
+                      items: documents.map((document) {
+                        var documentData =
+                            document.data() as Map<String, dynamic>;
+                        return InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => RecipeDetails(
+                                  recipeModel: Recipes(
+                                    title: documentData['title'],
+                                    description: documentData['description'],
+                                    photo: List<String>.from(
+                                        documentData['photo']),
+                                    category: documentData['category'],
+                                    procedure: documentData['procedure'],
+                                    incredients: documentData['incredients'],
+                                    time: documentData['time'],
+                                    favoritesUserIds: List<String>.from(
+                                        documentData['favoritesUserIds']),
                                   ),
                                 ),
+                              ));
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Stack(
+                                children: [
+                                  Image.file(
+                                    File(documentData['photo'][0]),
+                                    fit: BoxFit.fitWidth,
+                                    width: 370,
+                                  ),
+                                  Positioned.fill(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Colors.transparent,
+                                            Colors.black.withOpacity(0.6),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 10,
+                                    left: 10,
+                                    child: Text(
+                                      documentData['title'],
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 20,
+                                        color: Colors.white.withOpacity(0.6),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Positioned(
-                              bottom: 10,
-                              left: 10,
-                              child: Text(
-                                recipe.title,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 20,
-                                  color: Colors.white.withOpacity(0.6),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                            ));
+                      }).toList(),
                     );
-                  }).toList(),
-                ),
-              ],
-            ),
+                  }
+                },
+              )
+            ]),
           ),
         ),
       ),

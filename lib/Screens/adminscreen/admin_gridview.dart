@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recipely/screens/adminscreen/admin_add.dart';
 import 'package:recipely/screens/adminscreen/admin_update.dart';
@@ -41,125 +42,160 @@ class _AdmingridviewState extends State<Admingridview> {
         title: const Text("Added List"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            childAspectRatio: 1 / 1.5,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            crossAxisCount: 3, // Set a fixed number for crossAxisCount
-          ),
-          itemCount: datalist.length,
-          itemBuilder: (context, index) {
-            // ignore: unnecessary_cast
-            File imageFile = File(datalist[index].photo[0] as String);
+          padding: const EdgeInsets.all(8.0),
+          child: StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance.collection('Recipies').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else {
+                  var documents = snapshot.data!.docs;
+                  return GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 1 / 1.5,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      crossAxisCount:
+                          3, // Set a fixed number for crossAxisCount
+                    ),
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      var documentData =
+                          documents[index].data() as Map<String, dynamic>;
 
-            String timeKey = datalist[index].timeKey ?? '';
-            return GestureDetector(
-              onTap: () {
-                // Add your logic for handling tap on the container
-              },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Stack(
-                    children: [
-                      InkWell(
+                      String timeKey = documents[index].id;
+
+                      // Assuming 'photo' is a list of URLs, update this part accordingly
+                      String imageUrl = documentData['photo'][0];
+
+                      return GestureDetector(
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => Updatescrren(
-                                reciepeOfIndexForEditng: datalist[index]),
-                          ));
+                          // Add your logic for handling tap on the container
                         },
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 3),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Stack(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) => Updatescrren(
+                                        reciepeOfIndexForEditng: Recipes(
+                                          title: documentData['title'],
+                                          description:
+                                              documentData['description'],
+                                          photo: List<String>.from(
+                                              documentData['photo']),
+                                          category: documentData['category'],
+                                          procedure: documentData['procedure'],
+                                          incredients:
+                                              documentData['incredients'],
+                                          time: documentData['time'],
+                                          favoritesUserIds: List<String>.from(
+                                              documentData['favoritesUserIds']),
+                                        ),
+                                      ),
+                                    ));
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.2),
+                                            spreadRadius: 2,
+                                            blurRadius: 5,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                        ],
+                                      ),
+                                      child: AspectRatio(
+                                        aspectRatio: 1 / 1.5,
+                                        child: Image.file(
+                                         File( imageUrl),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  left: 0,
+                                  right: 0,
+                                  child: Container(
+                                    color: Colors.black.withOpacity(0.7),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        documentData['title'],
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 5,
+                                  right: 5,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.white),
+                                    onPressed: () async {
+                                      bool confirmDelete = await showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Confirm Delete'),
+                                            content: const Text(
+                                                'Are you sure you want to delete this recipe?'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(false);
+                                                },
+                                                child: const Text('No'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(true);
+                                                },
+                                                child: const Text('Yes'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+
+                                      if (confirmDelete == true) {
+                                        await deleteRecipe(timeKey);
+                                        print(
+                                            'Deleting recipe with key: $timeKey');
+                                        fetchdata();
+                                      }
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
-                            child: AspectRatio(
-                              aspectRatio: 1 / 1.5,
-                              child: Image.file(
-                                imageFile,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
+                          ],
                         ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          color: Colors.black.withOpacity(0.7),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              datalist[index].title,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 5,
-                        right: 5,
-                        child: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.white),
-                          onPressed: () async {
-                            bool confirmDelete = await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Confirm Delete'),
-                                  content: const Text(
-                                      'Are you sure you want to delete this recipe?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(false);
-                                      },
-                                      child: const Text('No'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(true);
-                                      },
-                                      child: const Text('Yes'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-
-                            if (confirmDelete == true) {
-                              await deleteRecipe(timeKey);
-                              print('Deleting recipe with key: $timeKey');
-                              fetchdata();
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
+                      );
+                    },
+                  );
+                }
+              })),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(

@@ -5,9 +5,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:random_string/random_string.dart';
 import 'package:recipely/screens/adminscreen/admin_gridview.dart';
-import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/models/model_recipe.dart';
+import 'package:recipely/service/fire_database.dart';
 import 'package:recipely/util/refactory.dart';
 
 class Addingscreen extends StatefulWidget {
@@ -109,18 +110,16 @@ class _AddingscreenState extends State<Addingscreen> {
                       controller: timeController,
                       hintText: "Time",
                       labelText: "Time",
-                    keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Time is required';
                         }
                         return null;
                       },
-                    
                     ),
                     const SizedBox(height: 20),
                     TextFormFieldWidget(
-                      
                         controller: descriptionController,
                         maxLines: null,
                         validator: (value) {
@@ -189,7 +188,7 @@ class _AddingscreenState extends State<Addingscreen> {
                     if (selectedImage.isNotEmpty) {
                       final variableReceipes = Recipes(
                           title: titleController.text,
-                          time: timeController.text,
+                          time:int.parse( timeController.text),
                           description: descriptionController.text,
                           category: categoryController.text,
                           procedure: proceduresController.text,
@@ -200,9 +199,20 @@ class _AddingscreenState extends State<Addingscreen> {
                           // favoritesUserIds: [],
                           // ProfileImage: _image?.path ?? "",
                           );
-
-                      addRecipe(variableReceipes);
-
+                      Map<String, dynamic> recipeInfoMap = {
+                        'title': titleController.text,
+                        'time': int.parse(timeController.text),
+                        'description': descriptionController.text,
+                        'category': categoryController.text,
+                        'procedure': proceduresController.text,
+                        // Use an empty string if selectImage is null
+                        'photo': selectedImage.map((e) => e!.path).toList(),
+                        'incredients': ingredientsController.text,
+                        'favoritesUserIds': []
+                      };
+                      //addRecipe(variableReceipes);
+                      DatabaseMethod().addRecipeDetails(
+                          recipeInfoMap, randomAlphaNumeric(10));
                       titleController.clear();
 
                       timeController.clear();

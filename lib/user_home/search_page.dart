@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -19,55 +20,41 @@ class Searchpage extends StatefulWidget {
   State<Searchpage> createState() => _SearchpageState();
 }
 
+final CollectionReference recipesCollection =
+    FirebaseFirestore.instance.collection('Recipies');
+
 class _SearchpageState extends State<Searchpage> {
   late List<Recipes> filteredRecipesList;
   String selectedFilter = 'All';
+
   @override
   void initState() {
     super.initState();
     widget.recipesList.isNotEmpty ? print('true') : print('false');
     filteredRecipesList = widget.recipesList.toList();
-    // filteredRecipesList.sort((a, b) => a.title.compareTo(b.title));
-    filteredRecipesList = widget.recipesList.toList();
     filterRecipes('');
   }
 
-  filterRecipes(String query) {
+  void filterRecipes(String query) {
     setState(() {
-      filteredRecipesList = widget.recipesList
+      // Assuming recipesList is the full list of recipes
+      List<Recipes> filteredRecipesList = widget.recipesList
           .where((recipe) =>
               recipe.title.toLowerCase().contains(query.toLowerCase()))
           .toList();
+
       if (selectedFilter != 'All') {
         // Apply additional filtering based on the selected filter
-        if (selectedFilter == '0-15') {
-          filteredRecipesList = filteredRecipesList
-              .where((recipe) =>
-                  int.parse(recipe.time) >= 0 && int.parse(recipe.time) <= 15)
-              .toList();
-        } else if (selectedFilter == '16-30') {
-          filteredRecipesList = filteredRecipesList
-              .where((recipe) =>
-                  int.parse(recipe.time) >= 16 && int.parse(recipe.time) <= 30)
-              .toList();
-        } else if (selectedFilter == '31-45') {
-          filteredRecipesList = filteredRecipesList
-              .where((recipe) =>
-                  int.parse(recipe.time) >= 31 && int.parse(recipe.time) <= 45)
-              .toList();
-        } else if (selectedFilter == '46-60') {
-          filteredRecipesList = filteredRecipesList
-              .where((recipe) =>
-                  int.parse(recipe.time) >= 46 && int.parse(recipe.time) <= 60)
-              .toList();
-        } else if (selectedFilter == '60+') {
-          filteredRecipesList = filteredRecipesList
-              .where((recipe) => int.parse(recipe.time) >= 60)
-              .toList();
-        }
+        filteredRecipesList = filteredRecipesList
+            .where((recipe) =>
+                recipe.time >= getMinTime(selectedFilter) &&
+               recipe.time <= getMaxTime(selectedFilter))
+            .toList();
       }
 
-      filteredRecipesList.sort((a, b) => a.time.compareTo(b.time));
+      // Sort the recipes based on cooking time
+      filteredRecipesList
+          .sort((a, b) => a.time.compareTo(b.time));
     });
   }
 
@@ -93,16 +80,16 @@ class _SearchpageState extends State<Searchpage> {
           ),
           const SizedBox(width: 10),
           Container(
-            padding: EdgeInsets.only(left: 20, right: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20),
             width: size.width - 20,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Color.fromARGB(255, 252, 249, 249),
+              color: const Color.fromARGB(255, 252, 249, 249),
               border: Border.all(color: Colors.black, width: 1),
             ),
             child: DropdownButton<String>(
               borderRadius: BorderRadius.circular(20),
-              dropdownColor: Color.fromARGB(255, 241, 239, 239),
+              dropdownColor: const Color.fromARGB(255, 241, 239, 239),
               value: selectedFilter,
               onChanged: (String? newValue) {
                 setState(() {
@@ -111,8 +98,14 @@ class _SearchpageState extends State<Searchpage> {
                 });
               },
               isExpanded: true,
-              items: <String>['All', '0-15', '16-30', '31-45', '46-60', '60+']
-                  .map<DropdownMenuItem<String>>((String value) {
+              items: <String>[
+                'All',
+                '0-15',
+                '16-30',
+                '31-45',
+                '46-60',
+                '60+'
+              ].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
@@ -127,18 +120,23 @@ class _SearchpageState extends State<Searchpage> {
             ),
           ),
           Expanded(
-            child: filteredRecipesList.isNotEmpty
-                ? ListView.builder(
-                    itemCount: filteredRecipesList.length,
+            child: FutureBuilder<List<Recipes>>(
+              future: getRecipes(selectedFilter),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (snapshot.data!.isNotEmpty) {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
-                      final recipe = filteredRecipesList[index];
-
-                      // Check if the image file exists
+                      final recipe = snapshot.data![index];
                       final imageFile = File(recipe.photo[0]);
                       if (!imageFile.existsSync()) {
                         return InkWell(
                           child: Container(),
-                        ); // or a placeholder image
+                        );
                       }
 
                       Image image = Image.file(imageFile,
@@ -146,7 +144,6 @@ class _SearchpageState extends State<Searchpage> {
 
                       return GestureDetector(
                         onTap: () {
-                          // Navigate to RecipeDetails page when an item is tapped
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>
@@ -158,12 +155,12 @@ class _SearchpageState extends State<Searchpage> {
                           title: Text(recipe.title),
                           subtitle: Text(recipe.category),
                           leading: image,
-                          // Add any other details you want to display
                         ),
                       );
                     },
-                  )
-                : Padding(
+                  );
+                } else {
+                  return Padding(
                     padding: const EdgeInsets.only(right: 70),
                     child: Center(
                       child: Column(
@@ -171,28 +168,86 @@ class _SearchpageState extends State<Searchpage> {
                         children: [
                           Lottie.asset(
                             'assets/images/not found.json',
-                            width: 200, // Adjust the width as needed
-                            height: 200, // Adjust the height as needed
+                            width: 200,
+                            height: 200,
                             fit: BoxFit.cover,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 54),
                             child: Text(
-                              "Your Item is NOt Cooked Yet",
+                              "Your Item is Not Cooked Yet",
                               style: GoogleFonts.poppins(
-                                  color:
-                                      const Color.fromARGB(255, 109, 108, 108),
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w700),
+                                color: const Color.fromARGB(255, 109, 108, 108),
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           )
                         ],
                       ),
                     ),
-                  ),
-          ),
+                  );
+                }
+              },
+            ),
+          )
         ],
       ),
     );
+  }
+
+  // Modify getRecipes to include the filter
+  Future<List<Recipes>> getRecipes(String filter) async {
+    QuerySnapshot querySnapshot;
+    if (filter == 'All') {
+      querySnapshot = await recipesCollection.get();
+    } else {
+      querySnapshot = await recipesCollection
+          .where('time', isGreaterThanOrEqualTo: getMinTime(filter))
+          .where('time', isLessThanOrEqualTo: getMaxTime(filter))
+          .get();
+    }
+
+    List<Recipes> recipes = [];
+    for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+      recipes.add(
+        Recipes.fromMap(documentSnapshot.data() as Map<String, dynamic>),
+      );
+    }
+    return recipes;
+  }
+
+  int getMinTime(String filter) {
+    switch (filter) {
+      case '0-15':
+        return 0;
+      case '16-30':
+        return 16;
+      case '31-45':
+        return 31;
+      case '46-60':
+        return 46;
+      case '60+':
+        return 60;
+      default:
+        return 0;
+    }
+  }
+
+  int getMaxTime(String filter) {
+    switch (filter) {
+      case '0-15':
+        return 15;
+      case '16-30':
+        return 30;
+      case '31-45':
+        return 45;
+      case '46-60':
+        return 60;
+      case '60+':
+        return 100000;
+      default:
+        return 1000000;
+    }
   }
 }

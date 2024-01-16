@@ -6,15 +6,20 @@ import 'package:flutter/material.dart';
 import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/models/model_recipe.dart';
+import 'package:recipely/user_home/search_page.dart';
 import 'package:recipely/util/review.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class RecipeDetails extends StatefulWidget {
   final Recipes recipeModel;
+  final String? userName;
+  final String? userProfile;
 
   const RecipeDetails({
     Key? key,
     required this.recipeModel,
+    this.userName,
+    this.userProfile,
   }) : super(key: key);
 
   @override
@@ -23,7 +28,7 @@ class RecipeDetails extends StatefulWidget {
 
 class _RecipeDetailsState extends State<RecipeDetails> {
   ValueNotifier<bool> isFavorite = ValueNotifier(false);
-  
+
   get reviewController => null;
 
   Future<void> getUser() async {
@@ -38,6 +43,9 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     getUser();
     super.initState();
     print(isFavorite);
+
+    print(widget.userName);
+    print(widget.userProfile);
   }
 
   @override
@@ -46,6 +54,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       body: SlidingUpPanel(
         parallaxEnabled: true,
@@ -118,7 +127,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                     width: 4,
                   ),
                   Text(
-                    widget.recipeModel.time,
+                    widget.recipeModel.time.toString(),
                   ),
                   const SizedBox(
                     width: 20,
@@ -179,9 +188,9 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                             SingleChildScrollView(
                               child: Text(widget.recipeModel.procedure),
                             ),
-                           Stack(
-                            children: [
-                             const Positioned(
+                            Stack(
+                              children: [
+                                const Positioned(
                                   left: 0,
                                   right: 0,
                                   bottom: 45,
@@ -189,7 +198,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                                     thickness: 1.6,
                                   ),
                                 ),
-                                  Align(
+                                Align(
                                   alignment: Alignment.bottomCenter,
                                   child: ReviewTextField(
                                     controller: reviewController,
@@ -206,9 +215,9 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                                       }
                                     },
                                   ),
-                                ), 
-                            ],
-                           )
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),

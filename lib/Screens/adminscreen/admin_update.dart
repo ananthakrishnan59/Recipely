@@ -47,7 +47,7 @@ class _AddingscreenState extends State<Updatescrren> {
     titleController =
         TextEditingController(text: widget.reciepeOfIndexForEditng.title);
     timeController =
-        TextEditingController(text: widget.reciepeOfIndexForEditng.time);
+        TextEditingController(text:widget.reciepeOfIndexForEditng.time.toString());
     categoryController =
         TextEditingController(text: widget.reciepeOfIndexForEditng.category);
     descriptionController =
@@ -234,7 +234,7 @@ class _AddingscreenState extends State<Updatescrren> {
                       final variableReceipes = Recipes(
                           timeKey: widget.reciepeOfIndexForEditng.timeKey,
                           title: titleController.text,
-                          time: timeController.text,
+                          time: int.parse(timeController.text),
                           description: descriptionController.text,
                           category: categoryController.text,
                           procedure: proceduresController.text,

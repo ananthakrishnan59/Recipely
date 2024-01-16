@@ -24,7 +24,7 @@ class RecipesAdapter extends TypeAdapter<Recipes> {
       category: fields[3] as String,
       procedure: fields[4] as String,
       incredients: fields[5] as String,
-      time: fields[6] as String,
+      time: fields[6] as int,
       favoritesUserIds: (fields[8] as List).cast<String>(),
     );
   }

@@ -63,17 +63,18 @@ Future<void> addAndRemoveFavorite(Recipes recipe) async {
     if (recipe.favoritesUserIds.contains(currentUserId)) {
       recipe.favoritesUserIds.remove(currentUserId);
     } else {
-      recipe.favoritesUserIds.add(currentUserId??'');
+      recipe.favoritesUserIds.add(currentUserId ?? '');
     }
 
     final box = await Hive.openBox<Recipes>('recipes');
-    await box.put(recipe.timeKey, recipe);
-    
-    getFavorites(); 
+    await box.put(recipe.time.toString()+recipe.title, recipe); // Assuming recipe.id is a unique String identifier
+    print('addddddddddddddd');
+    getFavorites();
   } catch (e) {
     print('Error in addAndRemoveFavorite: $e');
   }
 }
+
 
 void updateUserInDb(User newUserDetails, int userIndex) {
   final userBox = Hive.box<User>('users');

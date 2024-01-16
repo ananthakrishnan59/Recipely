@@ -22,7 +22,7 @@ class Recipes {
   final String incredients;
 
   @HiveField(6)
-  final String time;
+  final int time;
 
   @HiveField(7)
   String? timeKey;
@@ -40,5 +40,17 @@ class Recipes {
     required this.incredients,
     required this.time,
     required this.favoritesUserIds,
-  });
+  }); 
+  factory Recipes.fromMap(Map<String, dynamic> map) {
+  return Recipes(
+    time: map['time'] ?? '', 
+    description: map['description'] ?? '',
+    incredients: map['incredients'] ?? '',
+    procedure: map['procedure'] ?? '',
+    favoritesUserIds: List<String>.from(map['favoritesUserIds'] ?? []),
+    title: map['title'] ?? '',
+    category: map['category'] ?? '',
+    photo: List<String>.from(map['photo'] ?? []),
+  );
+  }
 }
