@@ -48,7 +48,7 @@ class _AdmingridviewState extends State<Admingridview> {
                   FirebaseFirestore.instance.collection('Recipies').snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 } else {
                   var documents = snapshot.data!.docs;
                   return GridView.builder(
@@ -83,7 +83,7 @@ class _AdmingridviewState extends State<Admingridview> {
                                   onTap: () {
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
-                                      builder: (context) => Updatescrren(
+                                      builder: (context) => Updatescrren(docid: documentData['docid'],
                                         reciepeOfIndexForEditng: Recipes(
                                           title: documentData['title'],
                                           description:
@@ -118,7 +118,7 @@ class _AdmingridviewState extends State<Admingridview> {
                                       child: AspectRatio(
                                         aspectRatio: 1 / 1.5,
                                         child: Image.file(
-                                         File( imageUrl),
+                                          File(imageUrl),
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -179,6 +179,7 @@ class _AdmingridviewState extends State<Admingridview> {
                                       );
 
                                       if (confirmDelete == true) {
+                                        deleteDocument( documentData['docid']);
                                         await deleteRecipe(timeKey);
                                         print(
                                             'Deleting recipe with key: $timeKey');
@@ -208,4 +209,8 @@ class _AdmingridviewState extends State<Admingridview> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
+}
+
+void deleteDocument(String documentId) {
+  FirebaseFirestore.instance.collection('Recipies').doc(documentId).delete();
 }

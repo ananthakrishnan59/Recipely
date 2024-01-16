@@ -114,7 +114,9 @@ class _HomescreenState extends State<Homescreen> {
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => Searchpage(
-                          recipesList: recipeslist, initialCategory: '')));
+                          recipesList: recipeslist, initialCategory: '')
+                          )
+                          );
                 },
                 child: TextFormField(
                   enabled: false,
@@ -321,16 +323,21 @@ class _HomescreenState extends State<Homescreen> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return CircularProgressIndicator();
+                                return const CircularProgressIndicator();
                               } else {
-                                var documents = snapshot.data!.docs;
+                                var documents = snapshot.data!.docs.where(
+                                    (element) => element['category']!
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(categories.toLowerCase()));
                                 return ListView.separated(
                                   physics: const BouncingScrollPhysics(),
                                   scrollDirection: Axis.horizontal,
                                   itemCount: documents.length,
                                   itemBuilder: (context, index) {
-                                    var documentData = documents[index].data()
-                                        as Map<String, dynamic>;
+                                    var documentData = documents
+                                        .elementAt(index)
+                                        .data()! as Map<String, dynamic>;
                                     return InkWell(
                                       onTap: () {
                                         Navigator.of(context)

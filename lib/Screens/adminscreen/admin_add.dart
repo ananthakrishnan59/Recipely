@@ -198,7 +198,7 @@ class _AddingscreenState extends State<Addingscreen> {
                           favoritesUserIds: []
                           // favoritesUserIds: [],
                           // ProfileImage: _image?.path ?? "",
-                          );
+                          );String docid=randomAlphaNumeric(10);
                       Map<String, dynamic> recipeInfoMap = {
                         'title': titleController.text,
                         'time': int.parse(timeController.text),
@@ -208,11 +208,11 @@ class _AddingscreenState extends State<Addingscreen> {
                         // Use an empty string if selectImage is null
                         'photo': selectedImage.map((e) => e!.path).toList(),
                         'incredients': ingredientsController.text,
-                        'favoritesUserIds': []
+                        'favoritesUserIds': [],'docid':docid,
                       };
                       //addRecipe(variableReceipes);
                       DatabaseMethod().addRecipeDetails(
-                          recipeInfoMap, randomAlphaNumeric(10));
+                          recipeInfoMap, docid);
                       titleController.clear();
 
                       timeController.clear();

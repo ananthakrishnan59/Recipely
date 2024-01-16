@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,9 +12,10 @@ import 'package:recipely/models/model_recipe.dart';
 import 'package:recipely/util/refactory.dart';
 
 class Updatescrren extends StatefulWidget {
-  const Updatescrren({Key? key, required this.reciepeOfIndexForEditng})
+  const Updatescrren({Key? key, required this.reciepeOfIndexForEditng, required this.docid})
       : super(key: key);
   final Recipes reciepeOfIndexForEditng;
+  final String docid;
   @override
   State<Updatescrren> createState() => _AddingscreenState();
 }
@@ -46,8 +48,8 @@ class _AddingscreenState extends State<Updatescrren> {
         widget.reciepeOfIndexForEditng.photo.map((e) => File(e)).toList();
     titleController =
         TextEditingController(text: widget.reciepeOfIndexForEditng.title);
-    timeController =
-        TextEditingController(text:widget.reciepeOfIndexForEditng.time.toString());
+    timeController = TextEditingController(
+        text: widget.reciepeOfIndexForEditng.time.toString());
     categoryController =
         TextEditingController(text: widget.reciepeOfIndexForEditng.category);
     descriptionController =
@@ -246,11 +248,20 @@ class _AddingscreenState extends State<Updatescrren> {
                           // favoritesUserIds: [],
                           // ProfileImage: _image?.path ?? "",
                           );
-
-                      // addRecipe(variableReceipes);
+                      Map<String, dynamic> dataToUpdate = {
+                        'title': titleController.text,
+                        'time': int.parse(timeController.text),
+                        'description': descriptionController.text,
+                        'category': categoryController.text,
+                        'procedure': proceduresController.text,
+                        // Use an empty string if selectImage is null
+                        'photo': selectedImage!.map((e) => e!.path).toList(),
+                        'incredients': ingredientsController.text,
+                        'favoritesUserIds': [], 'docid': widget.docid,
+                      };
                       updateRecipe(variableReceipes,
                           widget.reciepeOfIndexForEditng.timeKey ?? '');
-
+                      updateDocument(widget.docid, dataToUpdate);
                       titleController.clear();
 
                       timeController.clear();
@@ -308,4 +319,11 @@ void snackBarFunction(BuildContext context, String content, Color color) {
     content: Text(content),
     backgroundColor: color,
   ));
+}
+
+void updateDocument(String documentId, Map<String, dynamic> dataToUpdate) {
+  FirebaseFirestore.instance
+      .collection('Recipies')
+      .doc(documentId)
+      .update(dataToUpdate);
 }

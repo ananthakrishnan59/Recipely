@@ -48,7 +48,7 @@ class _SearchpageState extends State<Searchpage> {
         filteredRecipesList = filteredRecipesList
             .where((recipe) =>
                 recipe.time >= getMinTime(selectedFilter) &&
-               recipe.time <= getMaxTime(selectedFilter))
+               recipe.time < getMaxTime(selectedFilter))
             .toList();
       }
 

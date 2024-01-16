@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/models/model_recipe.dart';
+import 'package:recipely/user_home/home_page.dart';
 import 'package:recipely/user_home/search_page.dart';
 import 'package:recipely/util/review.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -29,7 +30,7 @@ class RecipeDetails extends StatefulWidget {
 class _RecipeDetailsState extends State<RecipeDetails> {
   ValueNotifier<bool> isFavorite = ValueNotifier(false);
 
-  get reviewController => null;
+  final reviewController = TextEditingController();
 
   Future<void> getUser() async {
     final username = await shared_preferences.getName();
@@ -203,14 +204,16 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                                   child: ReviewTextField(
                                     controller: reviewController,
                                     onTap: () {
+                                      print(reviewController.text);
                                       String trimmedText =
                                           reviewController.text.trim();
                                       if (trimmedText.isNotEmpty) {
-                                        // addreview (
-                                        //   reviewText: reviewController.text.trim(),
-                                        //   userIdd: userId,
-                                        //   userProfile: userProfile,
-                                        // );
+                                        addreview(
+                                          reviewText:
+                                              reviewController.text.trim(),
+                                          userIdd: userName,
+                                          userProfile: imageUrl!,
+                                        );
                                         reviewController.clear();
                                       }
                                     },
@@ -250,6 +253,20 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       ),
     );
   }
+}
+
+class addreview {
+  final String reviewText;
+  final String userIdd;
+  final String userProfile;
+
+  addreview(
+      {required this.reviewText,
+      required this.userIdd,
+      required this.userProfile});
+
+
+      
 }
 
 class RecipeImagesCarousel extends StatelessWidget {
