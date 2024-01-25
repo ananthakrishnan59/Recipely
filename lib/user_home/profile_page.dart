@@ -7,7 +7,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/models/user_model.dart';
 import 'package:recipely/screens/loginpage/login_page.dart';
+import 'package:recipely/user_home/aboutus.dart';
 import 'package:recipely/user_home/bottom_navigation.dart';
+import 'package:recipely/user_home/privacy_policy.dart';
 import 'package:recipely/user_home/profile_edit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -65,7 +67,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               onPressed: () {
                 Navigator.of(context)
                     .pushReplacement(MaterialPageRoute(builder: (context) {
-                  return  Bottomnavigationscreen(userEmailId: shared_preferences.nameKey,);
+                  return Bottomnavigationscreen(
+                    userEmailId: shared_preferences.nameKey,
+                  );
                 }));
               },
               icon: const Icon(
@@ -87,7 +91,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   child: CircleAvatar(
                     backgroundColor: Colors.white,
                     backgroundImage: loggedInUser?.image != null
-                        ? FileImage(File(loggedInUser?.image??''))
+                        ? FileImage(File(loggedInUser?.image ?? ''))
                         : const AssetImage('assets/images/profile.jpg')
                             as ImageProvider,
                     maxRadius: 60,
@@ -103,76 +107,96 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   color: Color.fromARGB(255, 64, 63, 63),
                   thickness: .5,
                 ),
-                listTile('Edit Profile',
-                    iconbutton: IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(builder: (context) {
-                            return UserProfileEdit(
-                              userdetails: loggedInUser,
-                              index: index,
-                            );
-                          }));
-                        },
-                        icon: const Icon(
-                          Icons.edit_document,
-                          color: Colors.teal,
-                        ))),
+                listTile('Privacy and Policy', onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => PrivacyScreen(),
+                  ));
+                },
+                    iconbutton: Icon(
+                      Icons.lock,
+                      color: Colors.blue,
+                    )),
+                const Divider(
+                  color: Color.fromARGB(255, 64, 63, 63),
+                  thickness: .5,
+                ),
+                listTile('About Us', onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => AboutUsScreen(),
+                  ));
+                },
+                    iconbutton: Icon(
+                      Icons.info,
+                      color: Colors.green,
+                    )),
                 const Divider(
                   color: Color.fromARGB(255, 94, 93, 93),
                   thickness: .5,
                 ),
-                listTile('Logout',
-                    textcolor: Colors.red,
-                    iconbutton: IconButton(
-                        onPressed: () {
-                          showDialog(
-                            barrierDismissible: false,
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text("Logout"),
-                                content: const Text(
-                                    "Are you sure you want to logout?"),
-                                actions: [
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0Xff188F79),
-                                    ),
-                                    onPressed: () async {
-                                      final prefs =
-                                          await SharedPreferences.getInstance();
-                                      prefs.clear().then((value) {
-                                        // Navigate to the login page
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  const Loginpage()),
-                                          (Route route) => false,
-                                        );
-                                      });
-                                    },
-                                    child: const Text("YES"),
-                                  ),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0Xff188F79),
-                                    ),
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text("CANCEL"),
-                                  )
-                                ],
-                              );
+                listTile('Edit Profile', onTap: () {
+                  Navigator.of(context)
+                      .pushReplacement(MaterialPageRoute(builder: (context) {
+                    return UserProfileEdit(
+                      userdetails: loggedInUser,
+                      index: index,
+                    );
+                  }));
+                },
+                    iconbutton: Icon(
+                      Icons.edit_document,
+                      color: Colors.teal,
+                    )),
+                const Divider(
+                  color: Color.fromARGB(255, 94, 93, 93),
+                  thickness: .5,
+                ),
+                listTile('Logout', onTap: () {
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text("Logout"),
+                        content: const Text("Are you sure you want to logout?"),
+                        actions: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0Xff188F79),
+                            ),
+                            onPressed: () async {
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.clear().then((value) {
+                                // Navigate to the login page
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          const Loginpage()),
+                                  (Route route) => false,
+                                );
+                              });
                             },
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.logout,
-                          color: Colors.red,
-                        )))
+                            child: const Text("YES"),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0Xff188F79),
+                            ),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("CANCEL"),
+                          )
+                        ],
+                      );
+                    },
+                  );
+                },
+                    textcolor: Colors.red,
+                    iconbutton: Icon(
+                      Icons.logout,
+                      color: Colors.red,
+                    ))
               ],
             ),
           ),

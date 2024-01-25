@@ -1,14 +1,16 @@
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/models/model_recipe.dart';
 import 'package:recipely/user_home/home_page.dart';
-import 'package:recipely/user_home/search_page.dart';
-import 'package:recipely/util/review.dart';
+
+
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class RecipeDetails extends StatefulWidget {
@@ -26,6 +28,9 @@ class RecipeDetails extends StatefulWidget {
   @override
   State<RecipeDetails> createState() => _RecipeDetailsState();
 }
+
+final CollectionReference reviewsCollection =
+    FirebaseFirestore.instance.collection('review');
 
 class _RecipeDetailsState extends State<RecipeDetails> {
   ValueNotifier<bool> isFavorite = ValueNotifier(false);
@@ -55,7 +60,6 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       body: SlidingUpPanel(
         parallaxEnabled: true,
@@ -191,6 +195,53 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                             ),
                             Stack(
                               children: [
+                                StreamBuilder<QuerySnapshot>(
+                                  stream: reviewsCollection
+                                      .orderBy('timestamp', descending: true)
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Center(
+                                        child: Text('Error: ${snapshot.error}'),
+                                      );
+                                    }
+
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+
+                                    if (!snapshot.hasData ||
+                                        snapshot.data!.docs.isEmpty) {
+                                      return const Center(
+                                        child: Text('No reviews available.'),
+                                      );
+                                    }
+
+                                    return ListView(
+                                      children: snapshot.data!.docs
+                                          .where((doc) =>
+                                              doc['recipesname'] ==
+                                              widget.recipeModel.title)
+                                          .map((doc) {
+                                        Map<String, dynamic> data =
+                                            doc.data() as Map<String, dynamic>;
+
+                                        return ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundImage: FileImage(
+                                                File(data['userProfile'])),
+                                          ),
+                                          title: Text(data['userIdd']),
+                                          subtitle: Text(data['reviewText']),
+                                          // Add more widgets to display additional information if needed
+                                        );
+                                      }).toList(),
+                                    );
+                                  },
+                                ),
                                 const Positioned(
                                   left: 0,
                                   right: 0,
@@ -201,22 +252,111 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                                 ),
                                 Align(
                                   alignment: Alignment.bottomCenter,
-                                  child: ReviewTextField(
-                                    controller: reviewController,
+                                  child: InkWell(
                                     onTap: () {
-                                      print(reviewController.text);
-                                      String trimmedText =
-                                          reviewController.text.trim();
-                                      if (trimmedText.isNotEmpty) {
-                                        addreview(
-                                          reviewText:
-                                              reviewController.text.trim(),
-                                          userIdd: userName,
-                                          userProfile: imageUrl!,
-                                        );
-                                        reviewController.clear();
-                                      }
+                                      showDialog(
+                                        barrierDismissible: false,
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text("Review"),
+                                            actions: [
+                                               TextField(controller:reviewController ,
+                                                minLines: 5,
+                                                maxLines: 10,
+                                                decoration: const InputDecoration(
+                                                    hintText:
+                                                        'Share your feedback',
+                                                    border: OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    20)))),
+                                              ),
+                                              Row(
+                                                children: [
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        String trimmedText =
+                                                            reviewController
+                                                                .text
+                                                                .trim();
+                                                        if (trimmedText
+                                                            .isNotEmpty) {
+                                                          final review =
+                                                              Addreview(
+                                                            recipesname: widget
+                                                                .recipeModel
+                                                                .title,
+                                                            reviewText:
+                                                                reviewController
+                                                                    .text
+                                                                    .trim(),
+                                                            userIdd: userName,
+                                                            userProfile:
+                                                                imageUrl!,
+                                                          );
+                                                          addReviewToFirestore(
+                                                              review);
+                                                          reviewController
+                                                              .clear();  Navigator.of(context)
+                                                            .pop();
+                                                        }
+                                                      },
+                                                      child: Text("Post")),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text("No")),
+                                                ],
+                                              )
+                                            ],
+                                          );
+                                        },
+                                      );
                                     },
+                                    child: Container(
+                                      height: 50,
+                                      width: 330,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(30),
+                                        border: Border.all(),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 12),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text("Share your feedback"),
+                                            Icon(FeatherIcons.send),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    // child: ReviewTextField(
+                                    //   controller: reviewController,
+                                    //   onTap: () {
+                                    //     print(reviewController.text);
+                                    //     String trimmedText =
+                                    //         reviewController.text.trim();
+                                    //     if (trimmedText.isNotEmpty) {
+                                    //       final review = Addreview(
+                                    //         recipesname:
+                                    //             widget.recipeModel.title,
+                                    //         reviewText:
+                                    //             reviewController.text.trim(),
+                                    //         userIdd: userName,
+                                    //         userProfile: imageUrl!,
+                                    //       );
+                                    //       addReviewToFirestore(review);
+                                    //       reviewController.clear();
+                                    //     }
+                                    //   },
+                                    // ),
                                   ),
                                 ),
                               ],
@@ -232,6 +372,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
           ),
         ),
         body: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
           child: Stack(
             children: [
               RecipeImagesCarousel(photoList: widget.recipeModel.photo),
@@ -255,18 +396,31 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   }
 }
 
-class addreview {
+class Addreview {
   final String reviewText;
   final String userIdd;
   final String userProfile;
-
-  addreview(
+  final String recipesname;
+  Addreview(
       {required this.reviewText,
       required this.userIdd,
-      required this.userProfile});
+      required this.userProfile,
+      required this.recipesname});
+}
 
-
-      
+Future<void> addReviewToFirestore(Addreview review) async {
+  try {
+    await reviewsCollection.add({
+      'reviewText': review.reviewText,
+      'userIdd': review.userIdd,
+      'userProfile': review.userProfile,
+      'recipesname': review.recipesname,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+    print('Review added to Firestore!');
+  } catch (error) {
+    print('Error adding review to Firestore: $error');
+  }
 }
 
 class RecipeImagesCarousel extends StatelessWidget {

@@ -102,7 +102,7 @@ class _HomescreenState extends State<Homescreen> {
                   InkWell(
                     onTap: () {},
                     child: imageUrl == null
-                        ? const CircleAvatar()
+                        ?  CircleAvatar()
                         : CircleAvatar(
                             backgroundImage: FileImage(File(imageUrl!)),
                           ),
@@ -344,7 +344,7 @@ class _HomescreenState extends State<Homescreen> {
                                             .push(MaterialPageRoute(
                                           builder: (context) => RecipeDetails(
                                               userName: userName,
-                                              userProfile: imageUrl!,
+                                              userProfile: imageUrl,
                                               recipeModel: Recipes(
                                                   title: documentData['title'],
                                                   description: documentData[

@@ -1,4 +1,4 @@
-package com.app.recipely
+package apps.project.recipely
 
 import io.flutter.embedding.android.FlutterActivity
 
