@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:recipely/models/model_recipe.dart';
 import 'package:recipely/user_home/detail_page.dart';
-import 'package:recipely/widget/widget.dart';
 
 class Searchpage extends StatefulWidget {
   const Searchpage(
