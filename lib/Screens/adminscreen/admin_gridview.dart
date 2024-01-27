@@ -83,7 +83,8 @@ class _AdmingridviewState extends State<Admingridview> {
                                   onTap: () {
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(
-                                      builder: (context) => Updatescrren(docid: documentData['docid'],
+                                      builder: (context) => Updatescrren(
+                                        docid: documentData['docid'],
                                         reciepeOfIndexForEditng: Recipes(
                                           title: documentData['title'],
                                           description:
@@ -117,8 +118,8 @@ class _AdmingridviewState extends State<Admingridview> {
                                       ),
                                       child: AspectRatio(
                                         aspectRatio: 1 / 1.5,
-                                        child: Image.file(
-                                          File(imageUrl),
+                                        child: Image.network(
+                                          imageUrl,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -179,7 +180,7 @@ class _AdmingridviewState extends State<Admingridview> {
                                       );
 
                                       if (confirmDelete == true) {
-                                        deleteDocument( documentData['docid']);
+                                        deleteDocument(documentData['docid']);
                                         await deleteRecipe(timeKey);
                                         print(
                                             'Deleting recipe with key: $timeKey');

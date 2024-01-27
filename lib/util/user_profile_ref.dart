@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-listTile(String title, {Color? textcolor, IconButton? iconbutton}) {
-  return ListTile(
-    title: Row(
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.ubuntu(
-              textStyle:
-                  TextStyle(color: textcolor ?? Colors.black, fontSize: 18)),
-        ),
-        if (iconbutton != null)
-          Align(
-            child: iconbutton,
+listTile(String title,
+    {Color? textcolor, IconButton? iconbutton, required Function() inkwellFunction}) {
+  return InkWell(
+    onTap: () {
+      inkwellFunction();
+    },
+    child: ListTile(
+      title: Row(
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.ubuntu(
+                textStyle:
+                    TextStyle(color: textcolor ?? Colors.black, fontSize: 18)),
           ),
-      ],
+          if (iconbutton != null)
+            Align(
+              child: iconbutton,
+            ),
+        ],
+      ),
     ),
   );
 }

@@ -112,7 +112,7 @@ class _AdminLoginState extends State<AdminLogin> {
                   onPressed: () async {
                     if (_formfield.currentState!.validate()) {
                       if (emailController.text ==
-                              'ananthakrishnan5920@gmail.com' &&
+                              'krishnan5920@gmail.com' &&
                           passwordController.text == 'krishna@123') {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(

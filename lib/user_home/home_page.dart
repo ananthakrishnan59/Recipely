@@ -114,9 +114,7 @@ class _HomescreenState extends State<Homescreen> {
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => Searchpage(
-                          recipesList: recipeslist, initialCategory: '')
-                          )
-                          );
+                          recipesList: recipeslist, initialCategory: '')));
                 },
                 child: TextFormField(
                   enabled: false,
@@ -344,7 +342,7 @@ class _HomescreenState extends State<Homescreen> {
                                             .push(MaterialPageRoute(
                                           builder: (context) => RecipeDetails(
                                               userName: userName,
-                                              userProfile: imageUrl!,
+                                              userProfile: imageUrl,
                                               recipeModel: Recipes(
                                                   title: documentData['title'],
                                                   description: documentData[
@@ -419,8 +417,8 @@ class _HomescreenState extends State<Homescreen> {
                                             Align(
                                               alignment: Alignment.topCenter,
                                               child: CircleAvatar(
-                                                backgroundImage: FileImage(File(
-                                                    documentData['photo'][0])),
+                                                backgroundImage: NetworkImage(
+                                                    documentData['photo'][0]),
                                                 radius: 65,
                                                 backgroundColor: Colors.blue,
                                               ),
@@ -497,8 +495,8 @@ class _HomescreenState extends State<Homescreen> {
                               borderRadius: BorderRadius.circular(15),
                               child: Stack(
                                 children: [
-                                  Image.file(
-                                    File(documentData['photo'][0]),
+                                  Image.network(
+                                    documentData['photo'][0],
                                     fit: BoxFit.fitWidth,
                                     width: 370,
                                   ),

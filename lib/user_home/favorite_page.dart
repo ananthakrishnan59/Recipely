@@ -97,8 +97,8 @@ class _FavoritescreenState extends State<Favoritescreen> {
                                           fit: StackFit.expand,
                                           children: [
                                             Image(
-                                              image: FileImage(
-                                                  File(value[index].photo[0])),
+                                              image: NetworkImage(
+                                                  value[index].photo[0]),
                                               fit: BoxFit.cover,
                                             ),
                                             Container(

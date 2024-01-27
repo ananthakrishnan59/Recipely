@@ -7,9 +7,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
 import 'package:recipely/screens/adminscreen/admin_gridview.dart';
-import 'package:recipely/models/model_recipe.dart';
+
 import 'package:recipely/service/fire_database.dart';
 import 'package:recipely/util/refactory.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class Addingscreen extends StatefulWidget {
   const Addingscreen({Key? key}) : super(key: key);
@@ -39,6 +40,7 @@ class _AddingscreenState extends State<Addingscreen> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController ingredientsController = TextEditingController();
   TextEditingController proceduresController = TextEditingController();
+  bool finished = false;
 
   @override
   Widget build(BuildContext context) {
@@ -179,65 +181,73 @@ class _AddingscreenState extends State<Addingscreen> {
               const SizedBox(
                 height: 15,
               ),
-              ElevatedButton(
-                style: const ButtonStyle(
-                    backgroundColor:
-                        MaterialStatePropertyAll(Color(0xFF1EDEC7))),
-                onPressed: () async {
-                  if (formKey.currentState!.validate()) {
-                    if (selectedImage.isNotEmpty) {
-                      final variableReceipes = Recipes(
-                          title: titleController.text,
-                          time:int.parse( timeController.text),
-                          description: descriptionController.text,
-                          category: categoryController.text,
-                          procedure: proceduresController.text,
-                          // Use an empty string if selectImage is null
-                          photo: selectedImage.map((e) => e!.path).toList(),
-                          incredients: ingredientsController.text,
-                          favoritesUserIds: []
-                          // favoritesUserIds: [],
-                          // ProfileImage: _image?.path ?? "",
-                          );String docid=randomAlphaNumeric(10);
-                      Map<String, dynamic> recipeInfoMap = {
-                        'title': titleController.text,
-                        'time': int.parse(timeController.text),
-                        'description': descriptionController.text,
-                        'category': categoryController.text,
-                        'procedure': proceduresController.text,
-                        // Use an empty string if selectImage is null
-                        'photo': selectedImage.map((e) => e!.path).toList(),
-                        'incredients': ingredientsController.text,
-                        'favoritesUserIds': [],'docid':docid,
-                      };
-                      //addRecipe(variableReceipes);
-                      DatabaseMethod().addRecipeDetails(
-                          recipeInfoMap, docid);
-                      titleController.clear();
+              finished
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      style: const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Color(0xFF1EDEC7))),
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          if (selectedImage.isNotEmpty) {
+                            // final variableReceipes = Recipes(
+                            //     title: titleController.text,
+                            //     time: int.parse(timeController.text),
+                            //     description: descriptionController.text,
+                            //     category: categoryController.text,
+                            //     procedure: proceduresController.text,
+                            //     // Use an empty string if selectImage is null
+                            //     photo: selectedImage.map((e) => e!.path).toList(),
+                            //     incredients: ingredientsController.text,
+                            //     favoritesUserIds: []
+                            //     // favoritesUserIds: [],
+                            //     // ProfileImage: _image?.path ?? "",
+                            //     );
+                            finished = !finished;
+                            await starter(titleController.text);
+                            finished = !finished;
+                            String docid = randomAlphaNumeric(10);
+                            Map<String, dynamic> recipeInfoMap = {
+                              'title': titleController.text,
+                              'time': int.parse(timeController.text),
+                              'description': descriptionController.text,
+                              'category': categoryController.text,
+                              'procedure': proceduresController.text,
+                              // Use an empty string if selectImage is null
+                              'photo': imageUrls,
+                              'incredients': ingredientsController.text,
+                              'favoritesUserIds': [], 'docid': docid,
+                            };
+                            //addRecipe(variableReceipes);
+                            DatabaseMethod()
+                                .addRecipeDetails(recipeInfoMap, docid);
+                            titleController.clear();
 
-                      timeController.clear();
-                      descriptionController.clear();
-                      categoryController.clear();
-                      ingredientsController.clear();
-                      proceduresController.clear();
-                      selectedImage = [];
-                    }
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const Admingridview(),
-                    ));
-                  } else {
-                    snackbarFunction(context, "Datas uploaded successfully ",
-                        Colors.amberAccent);
-                    setState(() {
-                      selectedImage = [];
-                    });
-                  }
-                },
-                child: Text(
-                  'Add',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                ),
-              )
+                            timeController.clear();
+                            descriptionController.clear();
+                            categoryController.clear();
+                            ingredientsController.clear();
+                            proceduresController.clear();
+                            selectedImage = [];
+                          }
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const Admingridview(),
+                          ));
+                        } else {
+                          snackbarFunction(
+                              context,
+                              "Datas uploaded successfully ",
+                              Colors.amberAccent);
+                          setState(() {
+                            selectedImage = [];
+                          });
+                        }
+                      },
+                      child: Text(
+                        'Add',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
+                    )
             ],
           ),
         ),
@@ -272,3 +282,37 @@ void snackBarFunction(BuildContext context, String content, Color color) {
     backgroundColor: color,
   ));
 }
+
+Future<String> uploadImageToFirebase({
+  required String imagePath,
+  required String recipeName,
+}) async {
+  String fileName = imagePath.split('/').last;
+  String folderName = 'recipes images';
+
+  firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+      .ref()
+      .child(folderName)
+      .child(recipeName)
+      .child(fileName);
+
+  try {
+    await ref.putFile(File(imagePath));
+  } catch (error) {
+    return error.toString();
+  }
+  String imageUrl = await ref.getDownloadURL();
+  return imageUrl;
+}
+
+starter(recipeName) async {
+  if (selectedImage.isNotEmpty) {
+    for (String imagePath in selectedImage.map((e) => e!.path)) {
+      String imageUrl = await uploadImageToFirebase(
+          imagePath: imagePath, recipeName: recipeName);
+      imageUrls.add(imageUrl);
+    }
+  }
+}
+
+List<String> imageUrls = [];

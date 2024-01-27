@@ -8,3 +8,12 @@ class DatabaseMethod {
         .set(recipeInfoMap);
   }
 }
+
+class DatabaseMethods {
+  Future addRecipereview(Map<String, dynamic> recipeReview, String ids) async {
+    return await FirebaseFirestore.instance
+        .collection("addreview")
+        .doc(ids)
+        .set(recipeReview);
+  }
+}

@@ -1,14 +1,15 @@
-import 'dart:io';
+
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:random_string/random_string.dart';
 import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/models/model_recipe.dart';
-import 'package:recipely/user_home/home_page.dart';
-import 'package:recipely/user_home/search_page.dart';
-import 'package:recipely/util/review.dart';
+import 'package:recipely/service/fire_database.dart';
+
+
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class RecipeDetails extends StatefulWidget {
@@ -29,7 +30,7 @@ class RecipeDetails extends StatefulWidget {
 
 class _RecipeDetailsState extends State<RecipeDetails> {
   ValueNotifier<bool> isFavorite = ValueNotifier(false);
-
+  final formKey = GlobalKey<FormState>();
   final reviewController = TextEditingController();
 
   Future<void> getUser() async {
@@ -201,22 +202,93 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                                 ),
                                 Align(
                                   alignment: Alignment.bottomCenter,
-                                  child: ReviewTextField(
-                                    controller: reviewController,
+                                  child: InkWell(
                                     onTap: () {
-                                      print(reviewController.text);
-                                      String trimmedText =
-                                          reviewController.text.trim();
-                                      if (trimmedText.isNotEmpty) {
-                                        addreview(
-                                          reviewText:
-                                              reviewController.text.trim(),
-                                          userIdd: userName,
-                                          userProfile: imageUrl!,
-                                        );
-                                        reviewController.clear();
-                                      }
+                                      showDialog(
+                                        barrierDismissible: false,
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          content: Container(
+                                            height: 200,
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10),
+                                                  child: Text(
+                                                    'Comment Your Genuine Review',
+                                                    style: TextStyle(
+                                                      fontSize: 17,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 50),
+                                                  child: Form(
+                                                    key: formKey,
+                                                    child: TextFormField(
+                                                      controller:
+                                                          reviewController,
+                                                      maxLines: null,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        border:
+                                                            OutlineInputBorder(),
+                                                        hintText:
+                                                            "Enter Your Comments",
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          actions: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                if (formKey.currentState!
+                                                    .validate()) {
+                                                  String id =
+                                                      randomAlphaNumeric(10);
+                                                  Map<String, dynamic>
+                                                      recipeInfoMap = {
+                                                    'title':
+                                                        reviewController.text,
+                                                  };
+                                                  DatabaseMethods()
+                                                      .addRecipereview(
+                                                          recipeInfoMap, id);
+                                                  reviewController.clear();
+                                                }
+                                              },
+                                              child: Text('Post'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
                                     },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(width: 1),
+                                        color:
+                                            Color.fromARGB(255, 228, 225, 225),
+                                      ),
+                                      height: 50,
+                                      width: 380,
+                                      child: Center(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 120),
+                                          child: Text('Enter Your Comment'),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -264,9 +336,6 @@ class addreview {
       {required this.reviewText,
       required this.userIdd,
       required this.userProfile});
-
-
-      
 }
 
 class RecipeImagesCarousel extends StatelessWidget {
@@ -297,7 +366,7 @@ class RecipeImagesCarousel extends StatelessWidget {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: FileImage(File(photo)),
+                    image: NetworkImage(photo),
                   ),
                 ),
               );
