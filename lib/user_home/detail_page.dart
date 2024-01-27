@@ -1,14 +1,16 @@
-
-
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:random_string/random_string.dart';
 import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/datas/shared_preference.dart';
 import 'package:recipely/models/model_recipe.dart';
+import 'package:recipely/models/user_model.dart';
+import 'package:recipely/screens/adminscreen/admin_add.dart';
+import 'package:recipely/service/fire_collection.dart';
 import 'package:recipely/service/fire_database.dart';
-
 
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -32,6 +34,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   ValueNotifier<bool> isFavorite = ValueNotifier(false);
   final formKey = GlobalKey<FormState>();
   final reviewController = TextEditingController();
+  bool change = false;
 
   Future<void> getUser() async {
     final username = await shared_preferences.getName();
@@ -150,10 +153,9 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               Divider(
                 color: Colors.black.withOpacity(0.3),
               ),
-              Expanded(
-                child: DefaultTabController(
-                  length: 3,
-                  initialIndex: 0,
+              DefaultTabController(
+                length: 3,
+                child: Expanded(
                   child: Column(
                     children: [
                       TabBar(
@@ -190,8 +192,84 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                             SingleChildScrollView(
                               child: Text(widget.recipeModel.procedure),
                             ),
+                            // Second Tab with review data
+                            // Third Tab with comment input
                             Stack(
                               children: [
+                                StreamBuilder<QuerySnapshot>(
+                                  stream: reviewCollection
+                                      .doc(widget.recipeModel.id!)
+                                      .collection('reviews')
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    }
+
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return CircularProgressIndicator();
+                                    }
+
+                                    if (!snapshot.hasData ||
+                                        snapshot.data!.docs.isEmpty) {
+                                      // Display a message when there is no data
+                                      return Text('No reviews available.');
+                                    }
+
+                                    // Process data from the snapshot
+                                    final List<DocumentSnapshot> documents =
+                                        snapshot.data!.docs;
+                                    print(documents[0]);
+                                    // Use the data to build your UI
+                                    return ListView.builder(
+                                      itemCount: documents.length,
+                                      itemBuilder: (context, index) {
+                                        return ListTile(
+                                          title: Container(
+                                            decoration: BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  255, 241, 233, 233),
+                                              border: Border.all(),
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(documents[index]
+                                                          .get('username')),
+                                                      CircleAvatar(
+                                                        backgroundImage:
+                                                            NetworkImage(documents[
+                                                                    index]
+                                                                .get(
+                                                                    'profile')),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Text(documents[index]
+                                                          .get('addreview') ??
+                                                      'No review'),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          // Customize as needed
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
                                 const Positioned(
                                   left: 0,
                                   right: 0,
@@ -250,19 +328,34 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                                           ),
                                           actions: [
                                             ElevatedButton(
-                                              onPressed: () {
+                                              onPressed: () async {
                                                 if (formKey.currentState!
                                                     .validate()) {
-                                                  String id =
-                                                      randomAlphaNumeric(10);
+                                                  final userBox =
+                                                      await Hive.box<User>(
+                                                          'users');
+                                                  final profileUrl =
+                                                      await uploadImageToFirebase(
+                                                          imagePath: userBox
+                                                              .values
+                                                              .first
+                                                              .image!,
+                                                          recipeName:
+                                                              'review profiles');
                                                   Map<String, dynamic>
                                                       recipeInfoMap = {
-                                                    'title':
+                                                    'addreview':
                                                         reviewController.text,
+                                                    'profile': profileUrl,
+                                                    'username': userBox
+                                                        .values.first.username,
                                                   };
+                                                  Navigator.pop(context);
                                                   DatabaseMethods()
                                                       .addRecipereview(
-                                                          recipeInfoMap, id);
+                                                    recipeInfoMap,
+                                                    widget.recipeModel.id!,
+                                                  );
                                                   reviewController.clear();
                                                 }
                                               },
@@ -292,7 +385,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                                   ),
                                 ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -406,5 +499,16 @@ class Ingredients extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+Future<void> getData() async {
+  QuerySnapshot querySnapshot = await reviewCollection.get();
+  // Process data from the querySnapshot
+  final List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+  // Use the data to build your UI
+  for (QueryDocumentSnapshot document in documents) {
+    print(document.get('username'));
+    // Customize as needed
   }
 }

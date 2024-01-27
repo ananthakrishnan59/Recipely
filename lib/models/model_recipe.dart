@@ -3,6 +3,8 @@ part 'model_recipe.g.dart';
 
 @HiveType(typeId: 1)
 class Recipes {
+  final String? id;
+
   @HiveField(0)
   final String title;
 
@@ -31,6 +33,7 @@ class Recipes {
   final List<String> favoritesUserIds;
 
   Recipes({
+    this.id,
     this.timeKey,
     required this.title,
     required this.description,
@@ -40,17 +43,18 @@ class Recipes {
     required this.incredients,
     required this.time,
     required this.favoritesUserIds,
-  }); 
+  });
   factory Recipes.fromMap(Map<String, dynamic> map) {
-  return Recipes(
-    time: map['time'] ?? '', 
-    description: map['description'] ?? '',
-    incredients: map['incredients'] ?? '',
-    procedure: map['procedure'] ?? '',
-    favoritesUserIds: List<String>.from(map['favoritesUserIds'] ?? []),
-    title: map['title'] ?? '',
-    category: map['category'] ?? '',
-    photo: List<String>.from(map['photo'] ?? []),
-  );
+    return Recipes(
+      id: map['docid'],
+      time: map['time'] ?? '',
+      description: map['description'] ?? '',
+      incredients: map['incredients'] ?? '',
+      procedure: map['procedure'] ?? '',
+      favoritesUserIds: List<String>.from(map['favoritesUserIds'] ?? []),
+      title: map['title'] ?? '',
+      category: map['category'] ?? '',
+      photo: List<String>.from(map['photo'] ?? []),
+    );
   }
 }

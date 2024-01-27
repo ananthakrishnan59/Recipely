@@ -10,10 +10,12 @@ class DatabaseMethod {
 }
 
 class DatabaseMethods {
-  Future addRecipereview(Map<String, dynamic> recipeReview, String ids) async {
+  Future addRecipereview(Map<String, dynamic> recipeReview, String id) async {
     return await FirebaseFirestore.instance
-        .collection("addreview")
-        .doc(ids)
+        .collection("Recipies")
+        .doc(id)
+        .collection('reviews')
+        .doc()
         .set(recipeReview);
   }
 }

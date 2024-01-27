@@ -344,6 +344,7 @@ class _HomescreenState extends State<Homescreen> {
                                               userName: userName,
                                               userProfile: imageUrl,
                                               recipeModel: Recipes(
+                                                  id: documentData['docid'],
                                                   title: documentData['title'],
                                                   description: documentData[
                                                       'description'],
@@ -477,6 +478,7 @@ class _HomescreenState extends State<Homescreen> {
                               Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => RecipeDetails(
                                   recipeModel: Recipes(
+                                    id: documentData['docid'],
                                     title: documentData['title'],
                                     description: documentData['description'],
                                     photo: List<String>.from(

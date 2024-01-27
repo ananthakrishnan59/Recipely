@@ -48,13 +48,12 @@ class _SearchpageState extends State<Searchpage> {
         filteredRecipesList = filteredRecipesList
             .where((recipe) =>
                 recipe.time >= getMinTime(selectedFilter) &&
-               recipe.time < getMaxTime(selectedFilter))
+                recipe.time < getMaxTime(selectedFilter))
             .toList();
       }
 
       // Sort the recipes based on cooking time
-      filteredRecipesList
-          .sort((a, b) => a.time.compareTo(b.time));
+      filteredRecipesList.sort((a, b) => a.time.compareTo(b.time));
     });
   }
 
@@ -98,14 +97,8 @@ class _SearchpageState extends State<Searchpage> {
                 });
               },
               isExpanded: true,
-              items: <String>[
-                'All',
-                '0-15',
-                '16-30',
-                '31-45',
-                '46-60',
-                '60+'
-              ].map<DropdownMenuItem<String>>((String value) {
+              items: <String>['All', '0-15', '16-30', '31-45', '46-60', '60+']
+                  .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
@@ -132,14 +125,14 @@ class _SearchpageState extends State<Searchpage> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       final recipe = snapshot.data![index];
-                      final imageFile = File(recipe.photo[0]);
-                      if (!imageFile.existsSync()) {
+                      final imageFile = recipe.photo[0];
+                      if (!imageFile.isNotEmpty) {
                         return InkWell(
                           child: Container(),
                         );
                       }
 
-                      Image image = Image.file(imageFile,
+                      Image image = Image.network(imageFile,
                           width: 50, height: 50, fit: BoxFit.cover);
 
                       return GestureDetector(
