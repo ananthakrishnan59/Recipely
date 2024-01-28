@@ -6,13 +6,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:recipely/screens/adminscreen/admin_add.dart';
 import 'package:recipely/screens/adminscreen/admin_gridview.dart';
 import 'package:recipely/datas/hive_db.dart';
 import 'package:recipely/models/model_recipe.dart';
+import 'package:recipely/user_home/home_page.dart';
 import 'package:recipely/util/refactory.dart';
 
 class Updatescrren extends StatefulWidget {
-  const Updatescrren({Key? key, required this.reciepeOfIndexForEditng, required this.docid})
+  const Updatescrren(
+      {Key? key, required this.reciepeOfIndexForEditng, required this.docid})
       : super(key: key);
   final Recipes reciepeOfIndexForEditng;
   final String docid;
@@ -20,6 +23,7 @@ class Updatescrren extends StatefulWidget {
   State<Updatescrren> createState() => _AddingscreenState();
 }
 
+List<String> photo = [];
 List<File>? selectedImage = [];
 String category = "Indian";
 List<String> categories = [
@@ -44,8 +48,7 @@ class _AddingscreenState extends State<Updatescrren> {
 
   @override
   void initState() {
-    selectedImage =
-        widget.reciepeOfIndexForEditng.photo.map((e) => File(e)).toList();
+    photo = widget.reciepeOfIndexForEditng.photo.map((e) => (e)).toList();
     titleController =
         TextEditingController(text: widget.reciepeOfIndexForEditng.title);
     timeController = TextEditingController(
@@ -102,8 +105,8 @@ class _AddingscreenState extends State<Updatescrren> {
                                   },
                                   icon: const Icon(Icons.add_a_photo),
                                 )
-                              : Image.file(
-                                  selectedImage![0],
+                              :selectedImage!=null?Image.file(selectedImage![0]) :Image.network(
+                                  photo[0],
                                   width: double.infinity,
                                   height: double.infinity,
                                   fit: BoxFit.cover,
@@ -248,6 +251,7 @@ class _AddingscreenState extends State<Updatescrren> {
                           // favoritesUserIds: [],
                           // ProfileImage: _image?.path ?? "",
                           );
+                     await starter(titleController.text);
                       Map<String, dynamic> dataToUpdate = {
                         'title': titleController.text,
                         'time': int.parse(timeController.text),
@@ -255,7 +259,7 @@ class _AddingscreenState extends State<Updatescrren> {
                         'category': categoryController.text,
                         'procedure': proceduresController.text,
                         // Use an empty string if selectImage is null
-                        'photo': selectedImage!.map((e) => e!.path).toList(),
+                        'photo': imageUrls,
                         'incredients': ingredientsController.text,
                         'favoritesUserIds': [], 'docid': widget.docid,
                       };
@@ -263,7 +267,6 @@ class _AddingscreenState extends State<Updatescrren> {
                           widget.reciepeOfIndexForEditng.timeKey ?? '');
                       updateDocument(widget.docid, dataToUpdate);
                       titleController.clear();
-
                       timeController.clear();
                       descriptionController.clear();
                       categoryController.clear();
@@ -327,3 +330,16 @@ void updateDocument(String documentId, Map<String, dynamic> dataToUpdate) {
       .doc(documentId)
       .update(dataToUpdate);
 }
+
+starter(recipeName) async {
+  if (selectedImage != null) {
+    imageUrls.clear();
+    for (String imagePath in selectedImage!.map((e) => e.path)) {
+      String imageUrl = await uploadImageToFirebase(
+          imagePath: imagePath, recipeName: recipeName);
+      imageUrls.add(imageUrl);
+    }
+  }
+}
+
+List<String> imageUrls = [];

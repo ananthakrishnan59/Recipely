@@ -255,6 +255,12 @@ class _AddingscreenState extends State<Addingscreen> {
     );
   }
 
+  @override
+  void dispose() {
+    selectedImage = [];
+    super.dispose();
+  }
+
   void snackbarFunction(
       BuildContext context, String s, MaterialAccentColor redAccent) {}
 }
@@ -307,6 +313,7 @@ Future<String> uploadImageToFirebase({
 
 starter(recipeName) async {
   if (selectedImage.isNotEmpty) {
+     imageUrls.clear();
     for (String imagePath in selectedImage.map((e) => e!.path)) {
       String imageUrl = await uploadImageToFirebase(
           imagePath: imagePath, recipeName: recipeName);
