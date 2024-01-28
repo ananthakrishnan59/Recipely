@@ -11,6 +11,7 @@ import 'package:recipely/models/user_model.dart';
 import 'package:recipely/user_home/detail_page.dart';
 import 'package:recipely/user_home/search_page.dart';
 import 'package:recipely/widget/widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({
@@ -33,7 +34,9 @@ bool friesselectbool = false;
 bool arabianselectbool = false;
 String userName = '';
 String? imageUrl;
-
+  late Box userBox;
+  User? loggedInUser;
+  late int index;
 class _HomescreenState extends State<Homescreen> {
   List<Recipes> recipeslist = [];
   Future<void> fetchUserName() async {
@@ -45,6 +48,14 @@ class _HomescreenState extends State<Homescreen> {
         userName = user.username; // Provide a default username if user is null
         imageUrl = user.image;
       });
+      final sharedprefs = await SharedPreferences.getInstance();
+    final loggedInUserIndex = sharedprefs.getInt('loggedInUserIndexKey');
+    final users = userBox.getAt(loggedInUserIndex!) as User;
+    print(user);
+    setState(() {
+      loggedInUser = users;
+      index = loggedInUserIndex;
+    });
       print(name);
     } catch (e) {
       print('Error fetching username: $e');
@@ -55,6 +66,7 @@ class _HomescreenState extends State<Homescreen> {
   String categories = '';
   @override
   void initState() {
+    userBox = Hive.box<User>('users');
     getFavorites();
     fetchUserName();
     getrecipesFn();
@@ -101,10 +113,8 @@ class _HomescreenState extends State<Homescreen> {
                   ),
                   InkWell(
                     onTap: () {},
-                    child: imageUrl == null
-                        ? const CircleAvatar()
-                        : CircleAvatar(
-                            backgroundImage: FileImage(File(imageUrl!)),
+                    child:  CircleAvatar(
+                            backgroundImage: FileImage(File(loggedInUser?.image??'')),
                           ),
                   )
                 ],

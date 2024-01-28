@@ -48,6 +48,7 @@ class _AddingscreenState extends State<Updatescrren> {
 
   @override
   void initState() {
+    selectedImage = null;
     photo = widget.reciepeOfIndexForEditng.photo.map((e) => (e)).toList();
     titleController =
         TextEditingController(text: widget.reciepeOfIndexForEditng.title);
@@ -93,8 +94,8 @@ class _AddingscreenState extends State<Updatescrren> {
                         children: [
                           // Display the selected image or show an icon to add a photo
                           selectedImage == null
-                              ? IconButton(
-                                  onPressed: () async {
+                              ? InkWell(
+                                  onTap: () async {
                                     final images =
                                         await selectImageFromGallery(context);
                                     if (images != null) {
@@ -103,14 +104,19 @@ class _AddingscreenState extends State<Updatescrren> {
                                       });
                                     }
                                   },
-                                  icon: const Icon(Icons.add_a_photo),
+                                  child: Image.network(
+                                      photo[0],
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
                                 )
-                              :selectedImage!=null?Image.file(selectedImage![0]) :Image.network(
-                                  photo[0],
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
+                                  : Image.file(
+                                      selectedImage![0],
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
                           // You can add an edit icon or button here
                           // This is just an example; customize it as needed
                           Positioned(
@@ -251,7 +257,7 @@ class _AddingscreenState extends State<Updatescrren> {
                           // favoritesUserIds: [],
                           // ProfileImage: _image?.path ?? "",
                           );
-                     await starter(titleController.text);
+                      await starter(titleController.text);
                       Map<String, dynamic> dataToUpdate = {
                         'title': titleController.text,
                         'time': int.parse(timeController.text),
@@ -294,6 +300,12 @@ class _AddingscreenState extends State<Updatescrren> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    selectedImage = null;
+    super.dispose();
   }
 
   void snackbarFunction(

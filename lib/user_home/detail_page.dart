@@ -11,6 +11,7 @@ import 'package:recipely/models/user_model.dart';
 import 'package:recipely/screens/adminscreen/admin_add.dart';
 import 'package:recipely/service/fire_collection.dart';
 import 'package:recipely/service/fire_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -35,16 +36,24 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   final formKey = GlobalKey<FormState>();
   final reviewController = TextEditingController();
   bool change = false;
-
+  late Box userBox;
+  User? loggedInUser;
+  late int index;
   Future<void> getUser() async {
     final username = await shared_preferences.getName();
     isFavorite.value = widget.recipeModel.favoritesUserIds.contains(username);
-    print(isFavorite.value);
-    print(username);
+    print(isFavorite.value);final sharedprefs = await SharedPreferences.getInstance();
+    final loggedInUserIndex = sharedprefs.getInt('loggedInUserIndexKey');
+    print(username);final user = userBox.getAt(loggedInUserIndex!) as User;
+    print(user);
+    setState(() {
+      loggedInUser = user;
+      index = loggedInUserIndex;
+    });
   }
 
   @override
-  void initState() {
+  void initState() {userBox = Hive.box<User>('users');
     getUser();
     super.initState();
     print(isFavorite);
@@ -336,10 +345,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                                                           'users');
                                                   final profileUrl =
                                                       await uploadImageToFirebase(
-                                                          imagePath: userBox
-                                                              .values
-                                                              .first
-                                                              .image!,
+                                                          imagePath: loggedInUser?.image??' ',
                                                           recipeName:
                                                               'review profiles');
                                                   Map<String, dynamic>
