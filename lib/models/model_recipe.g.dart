@@ -17,6 +17,7 @@ class RecipesAdapter extends TypeAdapter<Recipes> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Recipes(
+      id: fields[9] as String?,
       timeKey: fields[7] as String?,
       title: fields[0] as String,
       description: fields[1] as String,
@@ -32,7 +33,9 @@ class RecipesAdapter extends TypeAdapter<Recipes> {
   @override
   void write(BinaryWriter writer, Recipes obj) {
     writer
+      ..writeByte(10)
       ..writeByte(9)
+      ..write(obj.id)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)

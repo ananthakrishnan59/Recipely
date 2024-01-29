@@ -40,12 +40,16 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   User? loggedInUser;
   late int index;
   Future<void> getUser() async {
-    final username = await shared_preferences.getName();
-    isFavorite.value = widget.recipeModel.favoritesUserIds.contains(username);
-    print(isFavorite.value);final sharedprefs = await SharedPreferences.getInstance();
+    final sharedprefs = await SharedPreferences.getInstance();
     final loggedInUserIndex = sharedprefs.getInt('loggedInUserIndexKey');
-    print(username);final user = userBox.getAt(loggedInUserIndex!) as User;
-    print(user);
+
+    final user = userBox.getAt(loggedInUserIndex!) as User;
+    // print(user.email);
+    // final username = await shared_preferences.getName();
+    // print(widget.recipeModel.favoritesUserIds);
+
+    isFavorite.value = widget.recipeModel.favoritesUserIds.contains(user.email);
+
     setState(() {
       loggedInUser = user;
       index = loggedInUserIndex;
@@ -53,7 +57,8 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   }
 
   @override
-  void initState() {userBox = Hive.box<User>('users');
+  void initState() {
+    userBox = Hive.box<User>('users');
     getUser();
     super.initState();
     print(isFavorite);
@@ -223,7 +228,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                                     if (!snapshot.hasData ||
                                         snapshot.data!.docs.isEmpty) {
                                       // Display a message when there is no data
-                                      return Text('No reviews available.');
+                                      return Center(child: Text('No reviews available.'));
                                     }
 
                                     // Process data from the snapshot
@@ -345,7 +350,10 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                                                           'users');
                                                   final profileUrl =
                                                       await uploadImageToFirebase(
-                                                          imagePath: loggedInUser?.image??' ',
+                                                          imagePath:
+                                                              loggedInUser
+                                                                      ?.image ??
+                                                                  ' ',
                                                           recipeName:
                                                               'review profiles');
                                                   Map<String, dynamic>

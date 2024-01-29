@@ -34,9 +34,10 @@ bool friesselectbool = false;
 bool arabianselectbool = false;
 String userName = '';
 String? imageUrl;
-  late Box userBox;
-  User? loggedInUser;
-  late int index;
+late Box userBox;
+User? loggedInUser;
+late int index;
+
 class _HomescreenState extends State<Homescreen> {
   List<Recipes> recipeslist = [];
   Future<void> fetchUserName() async {
@@ -49,13 +50,13 @@ class _HomescreenState extends State<Homescreen> {
         imageUrl = user.image;
       });
       final sharedprefs = await SharedPreferences.getInstance();
-    final loggedInUserIndex = sharedprefs.getInt('loggedInUserIndexKey');
-    final users = userBox.getAt(loggedInUserIndex!) as User;
-    print(user);
-    setState(() {
-      loggedInUser = users;
-      index = loggedInUserIndex;
-    });
+      final loggedInUserIndex = sharedprefs.getInt('loggedInUserIndexKey');
+      final users = userBox.getAt(loggedInUserIndex!) as User;
+      print(user);
+      setState(() {
+        loggedInUser = users;
+        index = loggedInUserIndex;
+      });
       print(name);
     } catch (e) {
       print('Error fetching username: $e');
@@ -68,8 +69,8 @@ class _HomescreenState extends State<Homescreen> {
   void initState() {
     userBox = Hive.box<User>('users');
     getFavorites();
-    fetchUserName();
     getrecipesFn();
+    fetchUserName();
     super.initState();
   }
 
@@ -112,11 +113,13 @@ class _HomescreenState extends State<Homescreen> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {},
-                    child:  CircleAvatar(
-                            backgroundImage: FileImage(File(loggedInUser?.image??'')),
-                          ),
-                  )
+                      onTap: () {},
+                      child: loggedInUser?.image != null
+                          ? CircleAvatar(
+                              backgroundImage:
+                                  FileImage(File(loggedInUser?.image ?? '')),
+                            )
+                          : CircleAvatar())
                 ],
               ),
               const SizedBox(height: 15),

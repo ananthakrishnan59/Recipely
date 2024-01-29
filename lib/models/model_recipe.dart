@@ -3,6 +3,7 @@ part 'model_recipe.g.dart';
 
 @HiveType(typeId: 1)
 class Recipes {
+  @HiveField(9)
   final String? id;
 
   @HiveField(0)
